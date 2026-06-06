@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Paiements</title>
+<style>
+  @page { size: A4 landscape; margin: 15mm; }
+  body { font-family: sans-serif; font-size: 10px; color: #333; }
+  h1 { color: #FF7F00; font-size: 18px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th { background: #FF7F00; color: white; padding: 6px 4px; text-align: left; }
+  td { padding: 4px; border-bottom: 1px solid #ddd; }
+</style>
+</head>
+<body>
+  <h1>Rapport des paiements — Amicale des Anciens</h1>
+  <table>
+    <thead><tr><th>Date</th><th>Membre</th><th>Montant</th><th>Mode</th><th>Référence</th><th>Solde</th></tr></thead>
+    <tbody>
+      {% for p in payments %}<tr>
+        <td>{{ p.date_paiement|date:"d/m/Y" }}</td>
+        <td>{{ p.member.get_full_name|default:p.member.username }}</td>
+        <td>{{ p.montant }} FCFA</td>
+        <td>{{ p.get_mode_paiement_display }}</td>
+        <td>{{ p.reference|default:"—" }}</td>
+        <td>{{ p.solde_restant }} FCFA</td>
+      </tr>{% endfor %}
+    </tbody>
+  </table>
+  <p style="margin-top:10px; color:#999; font-size:9px;">Généré le {% now "d/m/Y" %} — {{ payments|length }} paiement(s)</p>
+</body>
+</html>

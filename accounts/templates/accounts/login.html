@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Connexion - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="bg-white rounded-xl shadow-md p-6">
+    <h3 class="text-2xl font-bold text-center mb-6">Connexion</h3>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="w-full bg-amicale text-white py-2 px-4 rounded-lg font-medium hover:bg-amicale-fonce transition mt-2">Se connecter</button>
+    </form>
+    <p class="text-center text-gray-600 mt-4 mb-0">
+      Pas encore inscrit ?
+      <a href="{% url 'accounts:register' %}" class="text-amicale hover:text-amicale-fonce">Créer un compte</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

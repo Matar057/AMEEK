@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes demandes de mentorat - Amicale{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Mes demandes de mentorat</h3>
+
+<ul class="flex border-b border-gray-200 mb-4" id="mentorshipTabs" role="tablist">
+  <li class="mr-1" role="presentation">
+    <button class="px-4 py-2 text-sm font-medium text-amicale border-b-2 border-amicale" id="as-mentee-tab" data-bs-toggle="tab" data-bs-target="#as-mentee" type="button" role="tab">
+      En tant que mentoré ({{ as_mentee|length }})
+    </button>
+  </li>
+  <li class="mr-1" role="presentation">
+    <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700" id="as-mentor-tab" data-bs-toggle="tab" data-bs-target="#as-mentor" type="button" role="tab">
+      En tant que mentor ({{ as_mentor|length }})
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content" id="mentorshipTabsContent">
+  <div class="block" id="as-mentee" role="tabpanel">
+    {% for m in as_mentee %}
+      <div class="bg-white rounded-xl shadow-md mb-3">
+        <div class="p-4 flex items-center justify-between">
+          <div>
+            <strong>Mentor :</strong> {{ m.mentor.get_full_name|default:m.mentor.username }}
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if m.statut == 'acceptee' %}bg-green-100 text-green-800{% elif m.statut == 'refusee' %}bg-red-100 text-red-800{% elif m.statut == 'terminee' %}bg-gray-200 text-gray-700{% else %}bg-yellow-100 text-yellow-800{% endif %} ml-2">
+              {{ m.get_statut_display }}
+            </span>
+            <br><small class="text-sm text-gray-500">{{ m.created_at|date:"d/m/Y" }}</small>
+          </div>
+          <a href="{% url 'mentorship:detail' m.pk %}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Détails</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-gray-500">Aucune demande envoyée.</p>
+    {% endfor %}
+  </div>
+
+  <div class="hidden" id="as-mentor" role="tabpanel">
+    {% for m in as_mentor %}
+      <div class="bg-white rounded-xl shadow-md mb-3">
+        <div class="p-4 flex items-center justify-between">
+          <div>
+            <strong>Mentoré :</strong> {{ m.mentee.get_full_name|default:m.mentee.username }}
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {% if m.statut == 'acceptee' %}bg-green-100 text-green-800{% elif m.statut == 'refusee' %}bg-red-100 text-red-800{% elif m.statut == 'terminee' %}bg-gray-200 text-gray-700{% else %}bg-yellow-100 text-yellow-800{% endif %} ml-2">
+              {{ m.get_statut_display }}
+            </span>
+            <br><small class="text-sm text-gray-500">{{ m.created_at|date:"d/m/Y" }}</small>
+          </div>
+          <div>
+            {% if m.statut == 'en_attente' %}
+              <a href="{% url 'mentorship:respond' m.pk %}" class="bg-amicale text-white px-3 py-1 rounded text-sm font-medium hover:bg-amicale-fonce transition">Répondre</a>
+            {% endif %}
+            <a href="{% url 'mentorship:detail' m.pk %}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Détails</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-gray-500">Aucune demande reçue.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

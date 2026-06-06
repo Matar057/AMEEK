@@ -1,0 +1,114 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Administration') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Administration') }}</a></h1>
+{% endblock %}
+
+{% block extrastyle %}
+<style>
+  :root {
+    --primary: #FF7F00;
+    --secondary: #CC5500;
+    --accent: #FFB347;
+    --primary-fg: #fff;
+    --body-fg: #333;
+    --body-bg: #fff;
+    --body-quiet-color: #666;
+    --header-color: #fff;
+    --header-branding-color: #fff;
+    --header-bg: #FF7F00;
+    --header-link-color: #fff;
+    --breadcrumbs-bg: #CC5500;
+    --breadcrumbs-fg: #fff;
+    --link-fg: #FF7F00;
+    --link-hover-color: #CC5500;
+    --link-selected-fg: #CC5500;
+    --button-bg: #FF7F00;
+    --button-fg: #fff;
+    --button-hover-bg: #CC5500;
+    --default-button-bg: #FF7F00;
+    --default-button-hover-bg: #CC5500;
+    --close-button-bg: #888;
+    --close-button-hover-bg: #666;
+    --object-tools-bg: #FF7F00;
+    --object-tools-hover-bg: #CC5500;
+    --delete-button-bg: #ba2121;
+    --delete-button-hover-bg: #a41515;
+    --selected-row: #FFF3E0;
+  }
+
+  #header {
+    background: linear-gradient(135deg, #FF7F00, #CC5500);
+    color: #fff;
+  }
+
+  #header a:link, #header a:visited {
+    color: #fff;
+  }
+
+  .module h2, .module caption, .inline-group h2 {
+    background: #FFB347;
+    color: #fff;
+  }
+
+  div.breadcrumbs {
+    background: #CC5500;
+    color: #fff;
+  }
+
+  div.breadcrumbs a {
+    color: #FFE0B2;
+  }
+
+  .button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #FF7F00;
+  }
+
+  .button:hover, input[type=submit]:hover, input[type=button]:hover {
+    background: #CC5500;
+  }
+
+  .button.default, input[type=submit].default, .submit-row input.default {
+    background: #FF7F00;
+  }
+
+  .button.default:hover, input[type=submit].default:hover {
+    background: #CC5500;
+  }
+
+  a:link, a:visited {
+    color: #FF7F00;
+  }
+
+  a:hover {
+    color: #CC5500;
+  }
+
+  #changelist-filter li.selected a {
+    color: #FF7F00;
+  }
+
+  .paginator a:link, .paginator a:visited {
+    color: #FF7F00;
+  }
+
+  .selector-chosen h2 {
+    background: #FFB347;
+  }
+
+  .calendar td.selected a {
+    background: #FF7F00;
+  }
+
+  .calendar td.nonday {
+    background: #FFF8F0;
+  }
+
+  .field-error {
+    border-color: #CC5500;
+  }
+</style>
+{% endblock %}

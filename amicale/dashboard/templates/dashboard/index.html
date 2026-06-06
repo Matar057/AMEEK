@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accueil - AMEEK{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap -mx-2 mb-4">
+  <div class="w-full px-2">
+    <div class="p-5 mb-4 bg-orange-50 rounded-xl">
+      <div class="container-fluid py-3">
+        <h1 class="text-4xl font-bold">
+          Bienvenue sur AMEEK Connect
+        </h1>
+        <p class="w-full md:w-2/3 text-lg">
+          AMEEK Connect est la plateforme officielle de l'Amicale des Élèves et Étudiants de Koki (AMEEK).
+          Elle permet de gérer les membres, les cotisations, les activités associatives et la communication interne,
+          tout en renforçant les liens de solidarité, d'entraide et d'engagement au sein de la communauté.
+        </p>
+        {% if not user.is_authenticated %}
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="{% url 'accounts:register' %}" class="bg-amicale text-white px-6 py-3 rounded-lg font-medium text-lg hover:bg-amicale-fonce transition">Rejoindre l'amicale</a>
+            <a href="{% url 'accounts:login' %}" class="bg-amicale text-white px-6 py-3 rounded-lg font-medium text-lg hover:bg-amicale-fonce transition">Se connecter</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-wrap -mx-2 mb-4">
+  <div class="w-1/2 md:w-1/5 px-2 mb-4">
+    <div class="bg-amicale text-white rounded-xl shadow-md">
+      <div class="p-4 text-center">
+        <div class="text-2xl font-bold">{{ total_members }}</div>
+        <div class="text-sm text-white/80">Membres</div>
+      </div>
+    </div>
+  </div>
+  <div class="w-1/2 md:w-1/5 px-2 mb-4">
+    <div class="bg-amicale-fonce text-white rounded-xl shadow-md">
+      <div class="p-4 text-center">
+        <div class="text-2xl font-bold">{{ nouveaux_bacheliers }}</div>
+        <div class="text-sm text-white/80">Nouveaux bacheliers</div>
+      </div>
+    </div>
+  </div>
+  <div class="w-1/2 md:w-1/5 px-2 mb-4">
+    <div class="bg-amicale text-white rounded-xl shadow-md">
+      <div class="p-4 text-center">
+        <div class="text-2xl font-bold">{{ total_mentors }}</div>
+        <div class="text-sm text-white/80">Mentors</div>
+      </div>
+    </div>
+  </div>
+  <div class="w-1/2 md:w-1/5 px-2 mb-4">
+    <div class="bg-amicale-clair text-white rounded-xl shadow-md">
+      <div class="p-4 text-center">
+        <div class="text-2xl font-bold">{{ total_payments }} FCFA</div>
+        <div class="text-sm text-white/80">Cotisations</div>
+      </div>
+    </div>
+  </div>
+  <div class="w-1/2 md:w-1/5 px-2 mb-4">
+    <div class="bg-amicale-fonce text-white rounded-xl shadow-md">
+      <div class="p-4 text-center">
+        <div class="text-2xl font-bold">{{ total_events }}</div>
+        <div class="text-sm text-white/80">Événements</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-wrap -mx-2">
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md h-full">
+      <div class="px-4 py-3 border-b border-gray-100"><h6 class="mb-0">Répartition par université</h6></div>
+      <div class="p-4">
+        {% if universite_stats %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead><tr class="border-b border-gray-200 text-gray-600 font-medium"><th class="px-3 py-2">Université</th><th class="px-3 py-2 text-right">Membres</th></tr></thead>
+              <tbody>
+                {% for stat in universite_stats %}
+                  <tr class="border-b border-gray-100">
+                    <td class="px-3 py-2">{{ stat.universite }}</td>
+                    <td class="px-3 py-2 text-right">{{ stat.count }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-gray-500 mb-0">Aucune donnée disponible.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md h-full">
+      <div class="px-4 py-3 border-b border-gray-100"><h6 class="mb-0">Répartition par filière</h6></div>
+      <div class="p-4">
+        {% if filiere_stats %}
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+              <thead><tr class="border-b border-gray-200 text-gray-600 font-medium"><th class="px-3 py-2">Filière</th><th class="px-3 py-2 text-right">Membres</th></tr></thead>
+              <tbody>
+                {% for stat in filiere_stats %}
+                  <tr class="border-b border-gray-100">
+                    <td class="px-3 py-2">{{ stat.filiere }}</td>
+                    <td class="px-3 py-2 text-right">{{ stat.count }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-gray-500 mb-0">Aucune donnée disponible.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-wrap -mx-2">
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md h-full">
+      <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+        <h6 class="mb-0">Dernières questions</h6>
+        <a href="{% url 'forum:list' %}" class="bg-amicale text-white px-3 py-1 rounded text-sm hover:bg-amicale-fonce transition">Voir tout</a>
+      </div>
+      <div class="divide-y divide-gray-100">
+        {% for q in recent_questions %}
+          <a href="{% url 'forum:detail' q.pk %}" class="px-4 py-3 hover:bg-orange-50 transition block">
+            <div class="flex justify-between">
+              <small>{{ q.titre|truncatechars:50 }}</small>
+              <small class="text-gray-500">{{ q.created_at|timesince }}</small>
+            </div>
+          </a>
+        {% empty %}
+          <div class="px-4 py-3 text-gray-500">Aucune question récente.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md h-full">
+      <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+        <h6 class="mb-0">Prochains événements</h6>
+        <a href="{% url 'events:list' %}" class="bg-amicale text-white px-3 py-1 rounded text-sm hover:bg-amicale-fonce transition">Voir tout</a>
+      </div>
+      <div class="divide-y divide-gray-100">
+        {% for event in upcoming_events %}
+          <a href="{% url 'events:detail' event.pk %}" class="px-4 py-3 hover:bg-orange-50 transition block">
+            <div class="flex justify-between">
+              <small>{{ event.titre|truncatechars:50 }}</small>
+              <small class="text-gray-500">{{ event.date|date:"d/m/Y" }}</small>
+            </div>
+          </a>
+        {% empty %}
+          <div class="px-4 py-3 text-gray-500">Aucun événement à venir.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-wrap -mx-2">
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md h-full">
+      <div class="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+        <h6 class="mb-0">Dernières publications</h6>
+        <a href="{% url 'communication:publication_list' %}" class="bg-amicale text-white px-3 py-1 rounded text-sm hover:bg-amicale-fonce transition">Voir tout</a>
+      </div>
+      <div class="divide-y divide-gray-100">
+        {% for pub in recent_publications %}
+          <a href="{% url 'communication:publication_detail' pub.pk %}" class="px-4 py-3 hover:bg-orange-50 transition block">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium
+                {% if pub.type == 'communique' %}bg-red-100 text-red-700
+                {% elif pub.type == 'activite' %}bg-green-100 text-green-700
+                {% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ pub.get_type_display }}
+              </span>
+            </div>
+            <p class="font-medium mb-0">{{ pub.titre|truncatechars:50 }}</p>
+            <small class="text-gray-500">{{ pub.publie_le|date:"d/m/Y" }}</small>
+          </a>
+        {% empty %}
+          <div class="px-4 py-3 text-gray-500">Aucune publication récente.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md h-full">
+      <div class="px-4 py-3 border-b border-gray-100"><h6 class="mb-0">Derniers membres inscrits</h6></div>
+      <div class="divide-y divide-gray-100">
+        {% for member in recent_members %}
+          <div class="px-4 py-3 flex justify-between items-center">
+            <span>{{ member.get_full_name|default:member.username }}</span>
+            <small class="text-gray-500">{{ member.date_joined|date:"d/m/Y" }}</small>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

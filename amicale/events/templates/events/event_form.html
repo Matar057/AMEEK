@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer un événement - Amicale{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap -mx-2 justify-center">
+  <div class="w-full md:w-2/3 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md">
+      <div class="p-4">
+        <h5>Créer un événement</h5>
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-4">
+              <label class="block text-gray-700 font-medium mb-1">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition mt-3">Créer</button>
+          <a href="{% url 'events:list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mt-3">Annuler</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

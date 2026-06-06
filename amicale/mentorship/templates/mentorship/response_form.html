@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Répondre à la demande - Amicale{% endblock %}
+
+{% block content %}
+<div class="flex justify-center">
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md">
+      <div class="p-4">
+        <h5>Répondre à la demande de mentorat</h5>
+        <p><strong>De :</strong> {{ mentorship.mentee.get_full_name|default:mentorship.mentee.username }}</p>
+        {% if mentorship.message %}
+          <div class="bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded-lg">{{ mentorship.message|linebreaks }}</div>
+        {% endif %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="{{ form.statut.id_for_label }}" class="block text-gray-700 font-medium mb-1">Statut</label>
+            {{ form.statut }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.commentaires.id_for_label }}" class="block text-gray-700 font-medium mb-1">Commentaires</label>
+            {{ form.commentaires }}
+          </div>
+          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Enregistrer</button>
+          <a href="{% url 'mentorship:my_requests' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mon profil - Amicale{% endblock %}
+ 
+{% block content %}
+<div class="flex flex-wrap -mx-2">
+  <div class="w-full md:w-1/3 px-2"> 
+    <div class="bg-white rounded-xl shadow-md text-center">
+      <div class="p-4">
+        {% if user.profile.photo %}
+          <img src="{{ user.profile.photo.url }}" alt="Photo" class="rounded-full border-2 border-gray-200 mb-3" width="150" height="150">
+        {% else %}
+          <img src="{% static 'img/default-avatar.svg' %}" alt="Avatar" class="rounded-full border-2 border-gray-200 mb-3" width="150" height="150">
+        {% endif %}
+        <h5>{{ user.get_full_name|default:user.username }}</h5>
+        <p class="text-gray-500">{{ user.email }}</p>
+        <a href="{% url 'accounts:profile_edit' %}" class="border border-amicale text-amicale px-3 py-1 rounded-lg hover:bg-amicale hover:text-white transition text-sm">Modifier le profil</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full md:w-2/3 px-2">
+    <div class="bg-white rounded-xl shadow-md">
+      <div class="px-4 py-3 border-b border-gray-100">
+        <h5 class="mb-0">Informations personnelles</h5>
+      </div>
+      <div class="p-4">
+        <dl class="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <dt class="font-medium text-gray-600">Nom d'utilisateur</dt>
+          <dd class="text-gray-900">{{ user.username }}</dd>
+
+          <dt class="font-medium text-gray-600">Prénom</dt>
+          <dd class="text-gray-900">{{ user.first_name|default:"—" }}</dd>
+
+          <dt class="font-medium text-gray-600">Nom</dt>
+          <dd class="text-gray-900">{{ user.last_name|default:"—" }}</dd>
+
+          <dt class="font-medium text-gray-600">Email</dt>
+          <dd class="text-gray-900">{{ user.email }}</dd>
+
+          <dt class="font-medium text-gray-600">Membre depuis</dt>
+          <dd class="text-gray-900">{{ user.date_joined|date:"d/m/Y" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    {% if user.profile %}
+    <div class="bg-white rounded-xl shadow-md mt-3">
+      <div class="px-4 py-3 border-b border-gray-100">
+        <h5 class="mb-0">Parcours académique et professionnel</h5>
+      </div>
+      <div class="p-4">
+        <dl class="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <dt class="font-medium text-gray-600">Promotion Bac</dt>
+          <dd class="text-gray-900">{{ user.profile.promotion_bac|default:"—" }}</dd>
+
+          <dt class="font-medium text-gray-600">Série</dt>
+          <dd class="text-gray-900">{{ user.profile.serie|default:"—" }}</dd>
+
+          <dt class="font-medium text-gray-600">Université / École</dt>
+          <dd class="text-gray-900">{{ user.profile.universite|default:"—" }}</dd>
+
+          <dt class="font-medium text-gray-600">Filière</dt>
+          <dd class="text-gray-900">{{ user.profile.filiere|default:"—" }}</dd>
+
+          <dt class="font-medium text-gray-600">Profession</dt>
+          <dd class="text-gray-900">{{ user.profile.profession|default:"—" }}</dd>
+        </dl>
+        <a href="{% url 'profiles:update' %}" class="border border-amicale text-amicale px-3 py-1 rounded-lg hover:bg-amicale hover:text-white transition text-sm mt-2">Modifier mon parcours</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

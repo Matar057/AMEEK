@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ question.titre }} - Amicale{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap -mx-2">
+  <div class="w-full lg:w-2/3 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md mb-4">
+      <div class="p-4">
+        <div class="flex items-start justify-between mb-3">
+          <h4>{{ question.titre }}</h4>
+          {% if question.est_resolu %}<span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Résolu</span>{% endif %}
+        </div>
+        <p>{{ question.contenu|linebreaks }}</p>
+        <small class="text-sm text-gray-500">
+          Posté par {{ question.auteur.get_full_name|default:question.auteur.username }}
+          le {{ question.created_at|date:"d/m/Y H:i" }}
+        </small>
+      </div>
+    </div>
+
+    <h5 class="mb-3">Réponses ({{ question.answer_count }})</h5>
+
+    {% for answer in question.answers.all %}
+      <div class="bg-white rounded-xl shadow-md mb-3 {% if answer.est_solution %}border-2 border-green-500{% endif %}">
+        <div class="p-4">
+          {% if answer.est_solution %}
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 mb-2">Solution acceptée</span>
+          {% endif %}
+          <p>{{ answer.contenu|linebreaks }}</p>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <small class="text-sm text-gray-500">
+              Par {{ answer.auteur.get_full_name|default:answer.auteur.username }}
+              — {{ answer.created_at|date:"d/m/Y H:i" }}
+            </small>
+            {% if user == question.auteur and not answer.est_solution %}
+              <a href="{% url 'forum:accept_solution' answer.pk %}" class="border border-green-500 text-green-500 px-3 py-1 rounded text-sm hover:bg-green-500 hover:text-white transition whitespace-nowrap">Accepter comme solution</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded-lg">Aucune réponse pour le moment. Soyez le premier à répondre !</div>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+      <div class="bg-white rounded-xl shadow-md mt-4">
+        <div class="p-4">
+          <h6>Votre réponse</h6>
+          <form method="post" action="{% url 'forum:answer' question.pk %}">
+            {% csrf_token %}
+            <div class="mb-3">
+              <textarea name="contenu" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amicale" placeholder="Écrivez votre réponse..." required></textarea>
+            </div>
+            <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Publier la réponse</button>
+          </form>
+        </div>
+      </div>
+    {% else %}
+      <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
+        <a href="{% url 'accounts:login' %}">Connectez-vous</a> pour répondre à cette question.
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="w-full lg:w-1/3 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md">
+      <div class="p-4">
+        <h6>À propos du forum</h6>
+        <p class="text-sm text-gray-500 mb-0">
+          Posez vos questions sur les études, les universités et l'insertion professionnelle.
+          Les anciens membres de l'amicale vous répondent directement.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

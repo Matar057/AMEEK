@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Nouvelle publication - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <a href="{% url 'communication:publication_list' %}" class="inline-flex items-center text-amicale hover:underline mb-4">← Retour</a>
+
+  <div class="bg-white rounded-xl shadow-md p-6">
+    <h3 class="text-xl font-bold mb-6">Nouvelle publication</h3>
+
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="bg-amicale text-white px-6 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Publier</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

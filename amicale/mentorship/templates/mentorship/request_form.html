@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Demander un mentor - Amicale{% endblock %}
+
+{% block content %}
+<div class="flex justify-center">
+  <div class="w-full md:w-1/2 px-2 mb-4">
+    <div class="bg-white rounded-xl shadow-md">
+      <div class="p-4 text-center">
+        {% if mentor.profile.photo %}
+          <img src="{{ mentor.profile.photo.url }}" alt="{{ mentor.get_full_name }}" class="rounded-full border-2 border-gray-200 mb-3" width="100" height="100">
+        {% else %}
+          <img src="{% static 'img/default-avatar.svg' %}" alt="Avatar" class="rounded-full border-2 border-gray-200 mb-3" width="100" height="100">
+        {% endif %}
+        <h5>{{ mentor.get_full_name|default:mentor.username }}</h5>
+        <p class="text-gray-500">{{ mentor.profile.filiere|default:"" }} — {{ mentor.profile.universite|default:"" }}</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md mt-3">
+      <div class="p-4">
+        <h5>Demande de mentorat</h5>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="{{ form.message.id_for_label }}" class="block text-gray-700 font-medium mb-1">{{ form.message.label }}</label>
+            {{ form.message }}
+          </div>
+          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Envoyer la demande</button>
+          <a href="{% url 'mentorship:mentor_list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

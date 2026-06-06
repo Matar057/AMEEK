@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Statistiques financières - AMEEK{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+  <h3 class="mb-0">Statistiques financières</h3>
+  <a href="{% url 'payments:list' %}" class="border border-amicale text-amicale px-3 py-1.5 rounded text-sm hover:bg-amicale hover:text-white transition">← Retour</a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="bg-amicale text-white rounded-xl shadow-md px-4 py-4 text-center">
+    <p class="text-sm opacity-80">Total collecté</p>
+    <h3 class="text-2xl font-bold">{{ total_collected }} FCFA</h3>
+  </div>
+  <div class="bg-amicale-fonce text-white rounded-xl shadow-md px-4 py-4 text-center">
+    <p class="text-sm opacity-80">Nombre de paiements</p>
+    <h3 class="text-2xl font-bold">{{ payment_count }}</h3>
+  </div>
+  <div class="bg-gradient-to-r from-amicale to-amicale-fonce text-white rounded-xl shadow-md px-4 py-4 text-center">
+    <p class="text-sm opacity-80">Membres contributeurs</p>
+    <h3 class="text-2xl font-bold">{{ member_count }}</h3>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white rounded-xl shadow-md">
+    <div class="px-4 py-3 border-b border-gray-100">
+      <h5 class="mb-0">Répartition par mode de paiement</h5>
+    </div>
+    <div class="p-4">
+      <div class="space-y-3">
+        {% for mode in mode_stats %}
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="font-medium">{{ mode.mode_label }}</span>
+              <span class="text-gray-600">{{ mode.total }} FCFA ({{ mode.count }} paiement{{ mode.count|pluralize }})</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              {% widthratio mode.total total_collected 100 as pct %}
+              <div class="bg-amicale h-2 rounded-full" style="width: {{ pct }}%"></div>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-gray-500 text-sm">Aucune donnée.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-md">
+    <div class="px-4 py-3 border-b border-gray-100">
+      <h5 class="mb-0">Évolution mensuelle</h5>
+    </div>
+    <div class="p-4 max-h-80 overflow-y-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-gray-500 border-b">
+            <th class="text-left py-1">Période</th>
+            <th class="text-right py-1">Montant</th>
+            <th class="text-right py-1">Paiements</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in monthly_stats %}
+            <tr class="border-b border-gray-50">
+              <td class="py-1.5">{{ m.month_name }} {{ m.year }}</td>
+              <td class="text-right py-1.5 font-medium">{{ m.total }} FCFA</td>
+              <td class="text-right py-1.5 text-gray-500">{{ m.count }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-center py-4 text-gray-500">Aucune donnée.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-md">
+  <div class="px-4 py-3 border-b border-gray-100">
+    <h5 class="mb-0">Derniers paiements</h5>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-gray-50 text-gray-600 font-medium">
+        <tr>
+          <th class="px-4 py-2">Date</th>
+          <th class="px-4 py-2">Membre</th>
+          <th class="px-4 py-2">Montant</th>
+          <th class="px-4 py-2">Mode</th>
+          <th class="px-4 py-2">Référence</th>
+          <th class="px-4 py-2">Reçu</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in latest_payments %}
+          <tr class="border-t border-gray-100">
+            <td class="px-4 py-2">{{ p.date_paiement|date:"d/m/Y H:i" }}</td>
+            <td class="px-4 py-2">{{ p.member.get_full_name|default:p.member.username }}</td>
+            <td class="px-4 py-2">{{ p.montant }} FCFA</td>
+            <td class="px-4 py-2">{{ p.get_mode_paiement_display }}</td>
+            <td class="px-4 py-2">{{ p.reference|default:"—" }}</td>
+            <td class="px-4 py-2">
+              <a href="{% url 'payments:receipt' p.pk %}" class="text-amicale hover:text-amicale-fonce flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                PDF
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="text-center px-4 py-4 text-gray-500">Aucun paiement.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

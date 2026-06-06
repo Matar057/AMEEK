@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Annuaire des membres - Amicale{% endblock %}
+
+{% block content %}
+<div class="flex flex-wrap -mx-2">
+  <div class="w-full px-2 flex flex-wrap items-center justify-between gap-2 mb-4">
+    <div>
+      <h3 class="mb-0">Annuaire des membres</h3>
+      <p class="text-gray-500 mb-0">{{ total_members }} membre(s) trouvé(s)</p>
+    </div>
+    <div class="flex gap-2">
+      <a href="{% url 'profiles:export_members_excel' %}" class="border border-amicale text-amicale px-3 py-1.5 rounded text-sm hover:bg-amicale hover:text-white transition flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Excel
+      </a>
+      <a href="{% url 'profiles:export_members_pdf' %}" class="border border-red-400 text-red-500 px-3 py-1.5 rounded text-sm hover:bg-red-500 hover:text-white transition flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        PDF
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-md mb-4">
+  <div class="p-4">
+    <form method="get" class="flex flex-wrap -mx-2">
+      <div class="w-full md:w-1/4 px-2 mb-4">{{ search_form.q }}</div>
+      <div class="w-full md:w-1/4 px-2 mb-4">{{ search_form.filiere }}</div>
+      <div class="w-full md:w-1/4 px-2 mb-4">{{ search_form.universite }}</div>
+      <div class="w-full md:w-1/4 px-2 mb-4">{{ search_form.profession }}</div>
+      <div class="w-full px-2">
+        <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Rechercher</button>
+        <a href="{% url 'profiles:member_list' %}" class="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">Réinitialiser</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="flex flex-wrap -mx-2">
+  {% for member in members %}
+    <div class="w-full md:w-1/3 lg:w-1/4 px-2 mb-4">
+      <div class="bg-white rounded-xl shadow-md h-full text-center">
+        <div class="p-4">
+          {% if member.profile.photo %}
+            <img src="{{ member.profile.photo.url }}" alt="{{ member.get_full_name }}" class="rounded-full border-2 border-gray-200 mb-3" width="100" height="100">
+          {% else %}
+            <img src="{% static 'img/default-avatar.svg' %}" alt="Avatar" class="rounded-full border-2 border-gray-200 mb-3" width="100" height="100">
+          {% endif %}
+          <h6 class="font-semibold">{{ member.get_full_name|default:member.username }}</h6>
+          <p class="text-sm text-gray-500 mb-1">
+            {% if member.profile.filiere %}{{ member.profile.filiere }}{% endif %}
+            {% if member.profile.universite %}<br>{{ member.profile.universite }}{% endif %}
+          </p>
+          {% if member.profile.profession %}
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-amicale-clair text-white">{{ member.profile.profession }}</span>
+          {% endif %}
+          <div class="mt-2">
+            <a href="{% url 'profiles:member_detail' member.username %}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Voir le profil</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="w-full px-2">
+      <div class="bg-blue-100 border border-blue-300 text-blue-800 px-4 py-3 rounded-lg">Aucun membre trouvé. Essayez de modifier vos critères de recherche.</div>
+    </div>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav aria-label="Navigation">
+  <ul class="flex justify-center items-center gap-1 mt-4">
+    {% if page_obj.has_previous %}
+      <li><a class="px-3 py-1 border rounded hover:bg-gray-100" href="?page={{ page_obj.previous_page_number }}">Précédent</a></li>
+    {% endif %}
+    <li class="opacity-50"><span class="px-3 py-1 border rounded">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}
+      <li><a class="px-3 py-1 border rounded hover:bg-gray-100" href="?page={{ page_obj.next_page_number }}">Suivant</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}
