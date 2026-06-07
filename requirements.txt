@@ -39,9 +39,9 @@ pillow==12.1.0
 pluggy==1.6.0
 pyasn1==0.6.3
 pycparser==3.0
-pydantic==2.10.0
+pydantic==2.13.4
 pydantic-settings==2.6.0
-pydantic_core==2.27.0
+pydantic_core==2.46.4
 pydyf==0.12.1
 pyphen==0.17.2
 pytest==8.3.4
@@ -56,12 +56,14 @@ qrcode==8.2
 reportlab==4.5.0
 requests==2.32.5
 rsa==4.9.1
+setuptools==82.0.1
 six==1.17.0
 SQLAlchemy==2.0.36
 sqlparse==0.5.5
 starlette==0.38.6
 tinycss2==1.5.1
 tinyhtml5==2.1.0
+typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2025.3
 urllib3==2.6.3
@@ -71,5 +73,6 @@ weasyprint==68.1
 webencodings==0.5.1
 websockets==16.0
 Werkzeug==3.1.6
+wheel==0.47.0
 xlsxwriter==3.2.9
 zopfli==0.4.1
