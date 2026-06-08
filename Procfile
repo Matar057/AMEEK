@@ -1,2 +1,2 @@
 release: python manage.py collectstatic --noinput; python manage.py migrate
-web: gunicorn amicale.wsgi --log-file -
+web: python manage.py migrate; gunicorn amicale.wsgi --log-file -
