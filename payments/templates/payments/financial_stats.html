@@ -6,7 +6,7 @@
 {% block content %}
 <div class="mb-6 flex items-center justify-between">
   <h3 class="mb-0">Statistiques financières</h3>
-  <a href="{% url 'payments:list' %}" class="border border-amicale text-amicale px-3 py-1.5 rounded text-sm hover:bg-amicale hover:text-white transition">← Retour</a>
+  <a href="{% url 'payments:list' %}" class="border border-amicale text-amicale px-3 py-1.5 rounded text-sm hover:bg-amicale hover:text-white transition">Retour</a>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -32,14 +32,16 @@
     <div class="p-4">
       <div class="space-y-3">
         {% for mode in mode_stats %}
-          <div>
+            <div>
             <div class="flex justify-between text-sm mb-1">
               <span class="font-medium">{{ mode.mode_label }}</span>
               <span class="text-gray-600">{{ mode.total }} FCFA ({{ mode.count }} paiement{{ mode.count|pluralize }})</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2">
-              {% widthratio mode.total total_collected 100 as pct %}
-              <div class="bg-amicale h-2 rounded-full" style="width: {{ pct }}%"></div>
+              {% if total_collected %}
+                {% widthratio mode.total total_collected 100 as pct %}
+                <div class="bg-amicale h-2 rounded-full" style="width: {{ pct }}%"></div>
+              {% endif %}
             </div>
           </div>
         {% empty %}
