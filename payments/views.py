@@ -3,6 +3,7 @@ from datetime import date, datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Sum, Count, Q
+from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -250,18 +251,18 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
             m['mode_label'] = dict(Payment.MODE_CHOICES).get(m['mode_paiement'], m['mode_paiement'])
 
         monthly_stats = (
-            all_payments.extra(select={'year': "strftime('%%Y', date_paiement)",
-                                       'month': "strftime('%%m', date_paiement)"})
-            .values('year', 'month')
+            all_payments
+            .annotate(month=TruncMonth('date_paiement'))
+            .values('month')
             .annotate(total=Sum('montant'), count=Count('id'))
-            .order_by('-year', '-month')
+            .order_by('-month')
         )
         for m in monthly_stats:
-            month_num = int(m['month'])
             m['month_name'] = [
                 '', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
                 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-            ][month_num]
+            ][m['month'].month]
+            m['year'] = m['month'].year
 
         latest_payments = all_payments.select_related('member').order_by('-date_paiement')[:10]
 
