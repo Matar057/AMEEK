@@ -27,8 +27,10 @@
             <label for="{{ form.message.id_for_label }}" class="block text-gray-700 font-medium mb-1">{{ form.message.label }}</label>
             {{ form.message }}
           </div>
-          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Envoyer la demande</button>
-          <a href="{% url 'mentorship:mentor_list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          <div class="flex gap-2">
+            <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Envoyer la demande</button>
+            <a href="{% url 'mentorship:mentor_list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          </div>
         </form>
       </div>
     </div>

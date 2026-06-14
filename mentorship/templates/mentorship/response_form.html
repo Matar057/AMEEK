@@ -22,8 +22,10 @@
             <label for="{{ form.commentaires.id_for_label }}" class="block text-gray-700 font-medium mb-1">Commentaires</label>
             {{ form.commentaires }}
           </div>
-          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Enregistrer</button>
-          <a href="{% url 'mentorship:my_requests' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          <div class="flex gap-2">
+            <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Enregistrer</button>
+            <a href="{% url 'mentorship:my_requests' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          </div>
         </form>
       </div>
     </div>

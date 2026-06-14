@@ -19,8 +19,10 @@
               {% endif %}
             </div>
           {% endfor %}
-          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition mt-3">Enregistrer</button>
-          <a href="{% url 'accounts:profile' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mt-3">Annuler</a>
+          <div class="flex gap-2 mt-3">
+            <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Enregistrer</button>
+            <a href="{% url 'accounts:profile' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          </div>
         </form>
       </div>
     </div>
