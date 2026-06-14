@@ -36,7 +36,7 @@ def send_email_html(to_email, subject, template_name, context):
             to=[to_email],
         )
         msg.attach_alternative(html, 'text/html')
-        msg.send()
+        msg.send(fail_silently=True)
         logger.info("Email envoyé avec succès à %s — %s", to_email, subject)
         return True
     except BadHeaderError:
