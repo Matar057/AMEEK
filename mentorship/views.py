@@ -8,6 +8,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from profiles.mixins import CarteRequiredMixin
 from .models import Mentorship
 from .forms import MentorshipRequestForm, MentorshipResponseForm
+from communication.email_utils import notify_mentorship_request, notify_mentorship_accepted
 
 
 class MentorListView(ListView):
@@ -34,7 +35,9 @@ class MentorshipRequestView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.mentee = self.request.user
         form.instance.mentor = self.mentor
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        notify_mentorship_request(self.object)
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,6 +73,12 @@ class MentorshipResponseView(CarteRequiredMixin, LoginRequiredMixin, UpdateView)
 
     def get_queryset(self):
         return Mentorship.objects.filter(mentor=self.request.user)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.object.statut == 'acceptee':
+            notify_mentorship_accepted(self.object)
+        return response
 
 
 class MentorshipDetailView(CarteRequiredMixin, LoginRequiredMixin, DetailView):

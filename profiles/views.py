@@ -25,6 +25,7 @@ import xlsxwriter
 import qrcode
 
 from .models import Profile
+from communication.email_utils import notify_payment_confirmed
 from .forms import ProfileForm, ProfileSearchForm
 from .mixins import CarteRequiredMixin
 from payments.models import Payment
@@ -216,7 +217,7 @@ class BuyCardView(LoginRequiredMixin, FormView):
             messages.info(self.request, 'Vous avez déjà acheté votre carte membre.')
             return redirect('profiles:update')
 
-        Payment.objects.create(
+        payment = Payment.objects.create(
             member=self.request.user,
             montant=settings.PRIX_CARTE_MEMBRE,
             mode_paiement=form.cleaned_data['mode_paiement'],
@@ -229,6 +230,7 @@ class BuyCardView(LoginRequiredMixin, FormView):
         profile.date_achat_carte = timezone.now()
         profile.save(update_fields=['carte_achetee', 'date_achat_carte'])
 
+        notify_payment_confirmed(payment)
         messages.success(self.request,
             f'Félicitations ! Votre carte membre a été activée. Bienvenue à l\'AMEEK !')
         return super().form_valid(form)

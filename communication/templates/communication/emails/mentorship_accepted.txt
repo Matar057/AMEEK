@@ -1,0 +1,8 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+Bonne nouvelle ! {{ mentor }} a accepté votre demande de mentorat.
+
+Vous pouvez maintenant échanger et commencer votre parcours.
+
+---
+{{ url }}

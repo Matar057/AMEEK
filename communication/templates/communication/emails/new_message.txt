@@ -1,0 +1,10 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+Vous avez reçu un nouveau message de {{ expediteur }}.
+
+Sujet : {{ sujet }}
+
+{{ message }}
+
+---
+{{ url }}

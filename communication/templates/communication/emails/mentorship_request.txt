@@ -1,0 +1,8 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+{{ mentee }} souhaite être votre mentoré.
+
+{% if message %}{{ message }}
+
+{% endif %}---
+{{ url }}

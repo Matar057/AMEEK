@@ -1,0 +1,9 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+{{ auteur }} a publié une nouvelle actualité :
+
+{{ titre }}
+{{ contenu }}
+
+---
+{{ url }}

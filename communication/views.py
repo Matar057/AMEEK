@@ -11,6 +11,7 @@ from django.views.generic.edit import FormMixin
 from profiles.mixins import CarteRequiredMixin
 from .models import Publication, Notification, Message
 from .forms import PublicationForm, MessageForm
+from .email_utils import notify_new_message, notify_new_publication
 
 
 class PublicationListView(ListView):
@@ -47,7 +48,9 @@ class PublicationCreateView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.auteur = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        notify_new_publication(self.object)
+        return response
 
 
 class NotificationListView(CarteRequiredMixin, LoginRequiredMixin, ListView):
@@ -147,8 +150,10 @@ class MessageCreateView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.expediteur = self.request.user
+        response = super().form_valid(form)
+        notify_new_message(self.object)
         flash_messages.success(self.request, 'Message envoyé avec succès.')
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse_lazy('communication:message_sent')

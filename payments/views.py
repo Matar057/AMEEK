@@ -20,6 +20,7 @@ import xlsxwriter
 from profiles.mixins import CarteRequiredMixin
 from .models import Payment
 from .forms import PaymentForm
+from communication.email_utils import notify_payment_confirmed
 
 MONTHS = [
     ('', 'Tous les mois'), ('1', 'Janvier'), ('2', 'Février'), ('3', 'Mars'),
@@ -58,7 +59,9 @@ class PaymentCreateView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.member = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        notify_payment_confirmed(self.object)
+        return response
 
 
 class PaymentReportsView(UserPassesTestMixin, ListView):

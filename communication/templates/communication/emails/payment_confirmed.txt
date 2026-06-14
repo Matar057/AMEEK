@@ -1,0 +1,11 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+Votre paiement a été confirmé.
+
+Reçu N° : {{ numero_recu }}
+Montant : {{ montant }} FCFA
+Date : {{ date }}
+Mode : {{ mode }}
+
+---
+{{ url }}

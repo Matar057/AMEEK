@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f5f5f5">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:20px auto;background:#fff;border-radius:8px;overflow:hidden">
+    <tr>
+      <td style="background:linear-gradient(135deg,#FF7F00,#CC5500);padding:20px;text-align:center">
+        <h1 style="color:#fff;margin:0;font-size:22px">AMEEK</h1>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:24px">
+        <p>Bonjour{% if prenom %} {{ prenom }}{% endif %},</p>
+        <p>Bonne nouvelle ! <strong>{{ mentor }}</strong> a accepté votre demande de mentorat.</p>
+        <p style="background:#E8F5E9;border:1px solid #C8E6C9;border-radius:6px;padding:12px;color:#2E7D32">Vous pouvez maintenant échanger et commencer votre parcours de mentorat.</p>
+        <p><a href="{{ url }}" style="display:inline-block;background:#FF7F00;color:#fff;text-decoration:none;padding:10px 20px;border-radius:6px">Voir mes mentorats</a></p>
+        <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
+        <p style="font-size:12px;color:#999">Vous recevez cet email via la plateforme AMEEK.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
