@@ -168,5 +168,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
+        'communication.email_utils': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': False,
+        },
     },
 }

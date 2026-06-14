@@ -1,9 +1,13 @@
+import logging
+
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, BadHeaderError
 from django.template.loader import render_to_string
 from django.urls import reverse
 
 from .models import Notification
+
+logger = logging.getLogger(__name__)
 
 
 def create_notification(user, titre, message, type_notif='info', lien=''):
@@ -17,18 +21,32 @@ def create_notification(user, titre, message, type_notif='info', lien=''):
 
 
 def send_email_html(to_email, subject, template_name, context):
-    context.setdefault('site_name', 'AMEEK')
-    context.setdefault('base_url', settings.BASE_URL)
-    html = render_to_string(f'communication/emails/{template_name}.html', context)
-    text = render_to_string(f'communication/emails/{template_name}.txt', context)
-    msg = EmailMultiAlternatives(
-        subject=subject,
-        body=text,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[to_email],
-    )
-    msg.attach_alternative(html, 'text/html')
-    msg.send()
+    if not to_email:
+        logger.warning("Tentative d'envoi d'email sans adresse destinataire")
+        return False
+    try:
+        context.setdefault('site_name', 'AMEEK')
+        context.setdefault('base_url', settings.BASE_URL)
+        html = render_to_string(f'communication/emails/{template_name}.html', context)
+        text = render_to_string(f'communication/emails/{template_name}.txt', context)
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[to_email],
+        )
+        msg.attach_alternative(html, 'text/html')
+        msg.send()
+        logger.info("Email envoyé avec succès à %s — %s", to_email, subject)
+        return True
+    except BadHeaderError:
+        logger.error("En-tête invalide dans l'email à %s — %s", to_email, subject)
+    except Exception as e:
+        logger.error("Échec d'envoi d'email à %s — %s : %s", to_email, subject, e)
+    return False
+
+
+
 
 
 def notify_new_message(message):
