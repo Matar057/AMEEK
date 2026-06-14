@@ -24,7 +24,7 @@
         {% if user.is_authenticated and user != member %}
           <a href="{% url 'mentorship:request' member.username %}" class="bg-amicale text-white px-3 py-1 rounded text-sm hover:bg-amicale-fonce transition">Demander comme mentor</a>
           <br>
-          <a href="mailto:{{ member.email }}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition mt-1">Contacter</a>
+          <a href="{% url 'communication:message_create' %}?to={{ member.username }}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition mt-1">Contacter</a>
         {% endif %}
       </div>
     </div>
