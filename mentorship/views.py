@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -30,6 +31,9 @@ class MentorshipRequestView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
         self.mentor = get_object_or_404(User, username=self.kwargs['username'])
         if request.user == self.mentor:
             return redirect('profiles:member_detail', username=self.mentor.username)
+        if Mentorship.objects.filter(mentor=self.mentor, mentee=request.user).exists():
+            messages.info(request, 'Vous avez déjà envoyé une demande à ce mentor.')
+            return redirect('mentorship:my_requests')
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
