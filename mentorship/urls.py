@@ -9,4 +9,5 @@ urlpatterns = [
     path('request/<str:username>/', views.MentorshipRequestView.as_view(), name='request'),
     path('<int:pk>/', views.MentorshipDetailView.as_view(), name='detail'),
     path('<int:pk>/respond/', views.MentorshipResponseView.as_view(), name='respond'),
+    path('<int:pk>/delete/', views.MentorshipDeleteView.as_view(), name='delete'),
 ]

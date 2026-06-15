@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Annuler la demande - Amicale{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="bg-white rounded-xl shadow-md p-6 text-center">
+    <h3 class="text-xl font-bold mb-4">Annuler la demande</h3>
+    <p class="text-gray-600 mb-6">Voulez-vous vraiment annuler votre demande de mentorat pour <strong>{{ mentorship.mentor.get_full_name|default:mentorship.mentor.username }}</strong> ?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition">Oui, annuler</button>
+      <a href="{% url 'mentorship:my_requests' %}" class="ml-2 bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition">Retour</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

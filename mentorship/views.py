@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 
 from profiles.mixins import CarteRequiredMixin
 from .models import Mentorship
@@ -94,3 +94,16 @@ class MentorshipDetailView(CarteRequiredMixin, LoginRequiredMixin, DetailView):
         return Mentorship.objects.filter(
             Q(mentor=self.request.user) | Q(mentee=self.request.user)
         ).select_related('mentor', 'mentee')
+
+
+class MentorshipDeleteView(CarteRequiredMixin, LoginRequiredMixin, DeleteView):
+    model = Mentorship
+    template_name = 'mentorship/mentorship_confirm_delete.html'
+    success_url = reverse_lazy('mentorship:my_requests')
+
+    def get_queryset(self):
+        return Mentorship.objects.filter(mentee=self.request.user, statut='en_attente')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Demande de mentorat annulée.')
+        return super().form_valid(form)
