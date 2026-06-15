@@ -36,15 +36,13 @@ def send_email_html(to_email, subject, template_name, context):
             to=[to_email],
         )
         msg.attach_alternative(html, 'text/html')
-        sent = msg.send(fail_silently=True)
-        if sent:
-            logger.info("Email envoyé avec succès à %s — %s", to_email, subject)
-            return True
-        logger.error("Échec d'envoi d'email à %s — %s (send a retourné 0)", to_email, subject)
+        msg.send()
+        logger.info("Email envoyé avec succès à %s — %s", to_email, subject)
+        return True
     except BadHeaderError:
         logger.error("En-tête invalide dans l'email à %s — %s", to_email, subject)
     except Exception as e:
-        logger.error("Échec d'envoi d'email à %s — %s : %s", to_email, subject, e)
+        logger.exception("Échec d'envoi d'email à %s — %s", to_email, subject)
     return False
 
 
