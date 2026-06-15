@@ -15,28 +15,8 @@ class CustomUserCreationForm(UserCreationForm):
                                 widget=forms.TextInput(attrs={'class': TW_FORM_INPUT}))
 
     statut = forms.ChoiceField(
-        choices=Profile.STATUT_CHOICES, required=True, label='Statut',
+        choices=Profile.STATUT_CHOICES, required=True, label='Je suis',
         widget=forms.Select(attrs={'class': TW_FORM_INPUT}),
-    )
-    promotion_bac = forms.IntegerField(
-        required=False, label='Promotion du Bac',
-        widget=forms.NumberInput(attrs={'class': TW_FORM_INPUT, 'placeholder': 'Ex: 2024'}),
-    )
-    serie = forms.ChoiceField(
-        choices=[('', '---')] + Profile.SERIE_CHOICES, required=False, label='Série du Bac',
-        widget=forms.Select(attrs={'class': TW_FORM_INPUT}),
-    )
-    universite = forms.CharField(
-        max_length=200, required=False, label='Université / École',
-        widget=forms.TextInput(attrs={'class': TW_FORM_INPUT, 'placeholder': 'Ex: UCAD'}),
-    )
-    filiere = forms.CharField(
-        max_length=200, required=False, label="Filière d'étude",
-        widget=forms.TextInput(attrs={'class': TW_FORM_INPUT, 'placeholder': 'Ex: Informatique'}),
-    )
-    profession = forms.CharField(
-        max_length=200, required=False, label='Profession',
-        widget=forms.TextInput(attrs={'class': TW_FORM_INPUT, 'placeholder': 'Ex: Ingénieur'}),
     )
 
     class Meta:

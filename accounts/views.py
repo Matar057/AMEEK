@@ -19,12 +19,7 @@ class RegisterView(CreateView):
         response = super().form_valid(form)
         profile = self.object.profile
         profile.statut = form.cleaned_data['statut']
-        profile.promotion_bac = form.cleaned_data.get('promotion_bac') or None
-        profile.serie = form.cleaned_data.get('serie') or ''
-        profile.universite = form.cleaned_data.get('universite') or ''
-        profile.filiere = form.cleaned_data.get('filiere') or ''
-        profile.profession = form.cleaned_data.get('profession') or ''
-        profile.save(update_fields=['statut', 'promotion_bac', 'serie', 'universite', 'filiere', 'profession'])
+        profile.save(update_fields=['statut'])
         login(self.request, self.object)
         return response
 
