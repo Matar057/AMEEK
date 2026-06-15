@@ -5,6 +5,13 @@ from django.dispatch import receiver
 
 
 class Profile(models.Model):
+    STATUT_CHOICES = [
+        ('nouveau_bachelier', 'Nouveau bachelier'),
+        ('etudiant', 'Étudiant'),
+        ('professionnel', 'Professionnel'),
+        ('diplome', 'Diplômé'),
+    ]
+
     SERIE_CHOICES = [
         ('S', 'Scientifique'),
         ('L', 'Littéraire'),
@@ -15,6 +22,7 @@ class Profile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    statut = models.CharField('Statut', max_length=20, choices=STATUT_CHOICES, blank=True)
     numero_membre = models.CharField('Numéro de membre', max_length=20, unique=True, blank=True, null=True)
     telephone = models.CharField('Téléphone', max_length=20, blank=True)
     photo = models.ImageField('Photo', upload_to='photos/', blank=True)
@@ -43,6 +51,8 @@ class Profile(models.Model):
 
     @property
     def type_membre(self):
+        if self.statut:
+            return dict(self.STATUT_CHOICES).get(self.statut, 'Diplômé')
         if self.profession and self.profession.strip():
             return 'Professionnel'
         if self.universite and self.universite.strip():
