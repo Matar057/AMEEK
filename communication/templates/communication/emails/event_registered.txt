@@ -1,0 +1,9 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+Votre inscription à l'événement {{ titre }} a bien été confirmée.
+
+Date : {{ date }}
+Lieu : {{ lieu }}
+
+---
+{{ url }}

@@ -187,6 +187,58 @@ def notify_mentorship_accepted(mentorship):
         )
 
 
+def notify_new_event(event):
+    from django.contrib.auth.models import User
+    membres = User.objects.filter(is_active=True).exclude(email='')
+    url = settings.BASE_URL + reverse('events:detail', args=[event.pk])
+    for membre in membres:
+        create_notification(
+            user=membre,
+            titre=f'Nouvel événement : {event.titre}',
+            message=f"{event.titre} — {event.date.strftime('%d/%m/%Y %H:%M')} à {event.lieu}",
+            type_notif='info',
+            lien=url,
+        )
+        if membre.email:
+            send_email_html(
+                to_email=membre.email,
+                subject=f'AMEEK - Nouvel événement : {event.titre}',
+                template_name='new_event',
+                context={
+                    'prenom': membre.first_name,
+                    'titre': event.titre,
+                    'description': event.description,
+                    'date': event.date.strftime('%d/%m/%Y %H:%M'),
+                    'lieu': event.lieu,
+                    'url': url,
+                },
+            )
+
+
+def notify_event_registration(event, user):
+    url = settings.BASE_URL + reverse('events:detail', args=[event.pk])
+    create_notification(
+        user=user,
+        titre='Inscription confirmée',
+        message=f"Vous êtes inscrit à l'événement : {event.titre}",
+        type_notif='success',
+        lien=url,
+    )
+    if user.email:
+        send_email_html(
+            to_email=user.email,
+            subject=f'AMEEK - Inscription confirmée : {event.titre}',
+            template_name='event_registered',
+            context={
+                'prenom': user.first_name,
+                'titre': event.titre,
+                'date': event.date.strftime('%d/%m/%Y %H:%M'),
+                'lieu': event.lieu,
+                'url': url,
+            },
+        )
+
+
 def notify_payment_confirmed(payment):
     url = settings.BASE_URL + reverse('payments:receipt', args=[payment.pk])
     create_notification(

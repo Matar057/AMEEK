@@ -10,6 +10,7 @@ from django.views.generic import ListView, DetailView, CreateView, TemplateView
 from profiles.mixins import CarteRequiredMixin
 from .models import Event
 from .forms import EventForm
+from communication.email_utils import notify_new_event, notify_event_registration
 
 
 class EventListView(ListView):
@@ -42,7 +43,9 @@ class EventCreateView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.organisateur = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        notify_new_event(self.object)
+        return response
 
 
 def register_event(request, pk):
@@ -57,6 +60,7 @@ def register_event(request, pk):
             messages.info(request, f"Vous êtes déjà inscrit à {event.titre}")
         elif event.places_restantes is None or event.places_restantes > 0:
             event.participants.add(request.user)
+            notify_event_registration(event, request.user)
             return redirect('events:registration_confirmed', pk=pk)
         else:
             messages.error(request, "Cet événement est complet.")

@@ -1,0 +1,13 @@
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+Un nouvel événement a été ajouté :
+
+{{ titre }}
+
+{{ description }}
+
+Date : {{ date }}
+Lieu : {{ lieu }}
+
+---
+{{ url }}
