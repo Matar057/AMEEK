@@ -1,5 +1,6 @@
 import logging
 
+import requests
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives, BadHeaderError
 from django.template.loader import render_to_string
@@ -29,6 +30,11 @@ def send_email_html(to_email, subject, template_name, context):
         context.setdefault('base_url', settings.BASE_URL)
         html = render_to_string(f'communication/emails/{template_name}.html', context)
         text = render_to_string(f'communication/emails/{template_name}.txt', context)
+
+        api_key = settings.EMAIL_HOST_PASSWORD
+        if api_key:
+            return _send_via_brevo_api(to_email, subject, html, text, api_key)
+
         msg = EmailMultiAlternatives(
             subject=subject,
             body=text,
@@ -43,6 +49,42 @@ def send_email_html(to_email, subject, template_name, context):
         logger.error("En-tête invalide dans l'email à %s — %s", to_email, subject)
     except Exception as e:
         logger.exception("Échec d'envoi d'email à %s — %s", to_email, subject)
+    return False
+
+
+def _send_via_brevo_api(to_email, subject, html, text, api_key):
+    from_email = settings.DEFAULT_FROM_EMAIL
+    sender_name = "AMEEK"
+    sender_email = from_email
+    if "<" in from_email and ">" in from_email:
+        sender_name = from_email.split("<")[0].strip()
+        sender_email = from_email.split("<")[1].rstrip(">")
+
+    payload = {
+        "sender": {"name": sender_name, "email": sender_email},
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": html,
+        "textContent": text,
+    }
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+    resp = requests.post(
+        "https://api.brevo.com/v3/smtp/email",
+        headers=headers,
+        json=payload,
+        timeout=15,
+    )
+    if resp.ok:
+        logger.info("Email envoyé via Brevo API à %s — %s", to_email, subject)
+        return True
+    logger.error(
+        "Brevo API error [%s] à %s — %s : %s",
+        resp.status_code, to_email, subject, resp.text,
+    )
     return False
 
 
