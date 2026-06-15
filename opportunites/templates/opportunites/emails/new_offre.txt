@@ -1,0 +1,10 @@
+{{ type }} — {{ titre }}
+
+{% if organisation %}Organisation : {{ organisation }}{% endif %}
+
+{{ description|truncatewords:50 }}
+
+Voir l'offre : {{ url }}
+
+—
+AMEEK — Amicale des Étudiants

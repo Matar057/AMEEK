@@ -239,6 +239,34 @@ def notify_event_registration(event, user):
         )
 
 
+def notify_new_offre(offre):
+    from django.contrib.auth.models import User
+    membres = User.objects.filter(is_active=True).exclude(email='')
+    url = settings.BASE_URL + reverse('opportunites:detail', args=[offre.pk])
+    for membre in membres:
+        create_notification(
+            user=membre,
+            titre=f'Nouvelle offre : {offre.titre}',
+            message=f"{offre.get_type_display()} — {offre.titre}{' — ' + offre.organisation if offre.organisation else ''}",
+            type_notif='info',
+            lien=url,
+        )
+        if membre.email:
+            send_email_html(
+                to_email=membre.email,
+                subject=f'AMEEK - Nouvelle offre : {offre.titre}',
+                template_name='new_offre',
+                context={
+                    'prenom': membre.first_name,
+                    'titre': offre.titre,
+                    'type': offre.get_type_display(),
+                    'organisation': offre.organisation or '',
+                    'description': offre.description,
+                    'url': url,
+                },
+            )
+
+
 def notify_payment_confirmed(payment):
     url = settings.BASE_URL + reverse('payments:receipt', args=[payment.pk])
     create_notification(

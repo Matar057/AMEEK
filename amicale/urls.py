@@ -19,6 +19,7 @@ urlpatterns = [
     path('forum/', include('forum.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('communication/', include('communication.urls')),
+    path('opportunites/', include('opportunites.urls')),
 ]
 
 urlpatterns += [

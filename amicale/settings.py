@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'forum.apps.ForumConfig',
     'dashboard.apps.DashboardConfig',
     'communication.apps.CommunicationConfig',
+    'opportunites.apps.OpportunitesConfig',
 ]
 
 MIDDLEWARE = [
