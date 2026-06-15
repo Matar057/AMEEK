@@ -9,7 +9,13 @@
       <div class="p-4">
         <div class="flex flex-wrap items-start justify-between gap-2 mb-3">
           <h3>{{ event.titre }}</h3>
-          <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-amicale text-white text-sm whitespace-nowrap">{{ event.get_type_event_display }}</span>
+          <div class="flex items-center gap-2">
+            {% if user.is_staff or user == event.organisateur %}
+              <a href="{% url 'events:update' event.pk %}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Modifier</a>
+              <a href="{% url 'events:delete' event.pk %}" class="border border-red-400 text-red-500 px-3 py-1 rounded text-sm hover:bg-red-500 hover:text-white transition">Supprimer</a>
+            {% endif %}
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-amicale text-white whitespace-nowrap">{{ event.get_type_event_display }}</span>
+          </div>
         </div>
 
         <dl class="flex flex-wrap -mx-2">

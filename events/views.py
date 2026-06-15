@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
 from profiles.mixins import CarteRequiredMixin
 from .models import Event
@@ -133,3 +133,39 @@ class EventCalendarView(ListView):
             'year_range': range(today.year - 5, today.year + 3),
         })
         return context
+
+
+class EventUpdateView(LoginRequiredMixin, UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'events/event_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        event = self.get_object()
+        if not request.user.is_staff and request.user != event.organisateur:
+            messages.error(request, "Vous n'avez pas la permission de modifier cet événement.")
+            return redirect('events:detail', pk=event.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Événement modifié avec succès.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('events:detail', kwargs={'pk': self.object.pk})
+
+
+class EventDeleteView(LoginRequiredMixin, DeleteView):
+    model = Event
+    success_url = reverse_lazy('events:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        event = self.get_object()
+        if not request.user.is_staff and request.user != event.organisateur:
+            messages.error(request, "Vous n'avez pas la permission de supprimer cet événement.")
+            return redirect('events:detail', pk=event.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Événement supprimé.')
+        return super().form_valid(form)

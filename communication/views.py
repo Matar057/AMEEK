@@ -173,3 +173,39 @@ class MessageDeleteView(CarteRequiredMixin, LoginRequiredMixin, DeleteView):
         if msg.expediteur == request.user:
             flash_messages.success(request, 'Message supprimé.')
         return super().dispatch(request, *args, **kwargs)
+
+
+class PublicationUpdateView(LoginRequiredMixin, UpdateView):
+    model = Publication
+    form_class = PublicationForm
+    template_name = 'communication/publication_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        pub = self.get_object()
+        if not request.user.is_staff and request.user != pub.auteur:
+            flash_messages.error(request, "Vous n'avez pas la permission de modifier cette publication.")
+            return redirect('communication:publication_detail', pk=pub.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        flash_messages.success(self.request, 'Publication modifiée avec succès.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('communication:publication_detail', kwargs={'pk': self.object.pk})
+
+
+class PublicationDeleteView(LoginRequiredMixin, DeleteView):
+    model = Publication
+    success_url = reverse_lazy('communication:publication_list')
+
+    def dispatch(self, request, *args, **kwargs):
+        pub = self.get_object()
+        if not request.user.is_staff and request.user != pub.auteur:
+            flash_messages.error(request, "Vous n'avez pas la permission de supprimer cette publication.")
+            return redirect('communication:publication_detail', pk=pub.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        flash_messages.success(self.request, 'Publication supprimée.')
+        return super().form_valid(form)

@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Nouvelle publication - AMEEK{% endblock %}
+{% block title %}{% if object %}Modifier la publication{% else %}Nouvelle publication{% endif %} - AMEEK{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
   <a href="{% url 'communication:publication_list' %}" class="inline-flex items-center text-amicale hover:underline mb-4">← Retour</a>
 
   <div class="bg-white rounded-xl shadow-md p-6">
-    <h3 class="text-xl font-bold mb-6">Nouvelle publication</h3>
+    <h3 class="text-xl font-bold mb-6">{% if object %}Modifier la publication{% else %}Nouvelle publication{% endif %}</h3>
 
     <form method="post">
       {% csrf_token %}
@@ -20,7 +20,9 @@
           {% endif %}
         </div>
       {% endfor %}
-      <button type="submit" class="bg-amicale text-white px-6 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Publier</button>
+      <button type="submit" class="bg-amicale text-white px-6 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">
+        {% if object %}Enregistrer{% else %}Publier{% endif %}
+      </button>
     </form>
   </div>
 </div>

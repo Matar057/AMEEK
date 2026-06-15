@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer la réponse - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="bg-white rounded-xl shadow-md p-6 text-center">
+    <h3 class="text-xl font-bold mb-4">Confirmer la suppression</h3>
+    <p class="text-gray-600 mb-6">Voulez-vous vraiment supprimer cette réponse ?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition">Oui, supprimer</button>
+      <a href="{% url 'forum:detail' object.question.pk %}" class="ml-2 bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition">Annuler</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

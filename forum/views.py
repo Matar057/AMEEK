@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from profiles.mixins import CarteRequiredMixin
 from .models import Question, Answer
@@ -62,3 +63,77 @@ def accept_solution(request, pk):
         answer.question.est_resolu = True
         answer.question.save()
     return redirect('forum:detail', pk=answer.question.pk)
+
+
+class QuestionUpdateView(LoginRequiredMixin, UpdateView):
+    model = Question
+    form_class = QuestionForm
+    template_name = 'forum/question_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        question = self.get_object()
+        if not request.user.is_staff and request.user != question.auteur:
+            messages.error(request, "Vous n'avez pas la permission de modifier cette question.")
+            return redirect('forum:detail', pk=question.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Question modifiée avec succès.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('forum:detail', kwargs={'pk': self.object.pk})
+
+
+class QuestionDeleteView(LoginRequiredMixin, DeleteView):
+    model = Question
+    success_url = reverse_lazy('forum:list')
+
+    def dispatch(self, request, *args, **kwargs):
+        question = self.get_object()
+        if not request.user.is_staff and request.user != question.auteur:
+            messages.error(request, "Vous n'avez pas la permission de supprimer cette question.")
+            return redirect('forum:detail', pk=question.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Question supprimée.')
+        return super().form_valid(form)
+
+
+class AnswerUpdateView(LoginRequiredMixin, UpdateView):
+    model = Answer
+    form_class = AnswerForm
+    template_name = 'forum/answer_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        answer = self.get_object()
+        if not request.user.is_staff and request.user != answer.auteur:
+            messages.error(request, "Vous n'avez pas la permission de modifier cette réponse.")
+            return redirect('forum:detail', pk=answer.question.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Réponse modifiée avec succès.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('forum:detail', kwargs={'pk': self.object.question.pk})
+
+
+class AnswerDeleteView(LoginRequiredMixin, DeleteView):
+    model = Answer
+
+    def dispatch(self, request, *args, **kwargs):
+        answer = self.get_object()
+        if not request.user.is_staff and request.user != answer.auteur:
+            messages.error(request, "Vous n'avez pas la permission de supprimer cette réponse.")
+            return redirect('forum:detail', pk=answer.question.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Réponse supprimée.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('forum:detail', kwargs={'pk': self.object.question.pk})

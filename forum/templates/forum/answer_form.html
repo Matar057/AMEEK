@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Modifier la réponse - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="bg-white rounded-xl shadow-md p-6">
+    <h3 class="text-xl font-bold mb-4">Modifier la réponse</h3>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <div class="flex gap-2">
+        <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Enregistrer</button>
+        <a href="{% url 'forum:detail' object.question.pk %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Poser une question - Amicale{% endblock %}
+{% block title %}{% if object %}Modifier la question{% else %}Poser une question{% endif %} - Amicale{% endblock %}
 
 {% block content %}
 <div class="flex justify-center">
   <div class="w-full md:w-2/3 px-2 mb-4">
     <div class="bg-white rounded-xl shadow-md">
       <div class="p-4">
-        <h5>Poser une question</h5>
-        <p class="text-gray-500">Les anciens membres de l'amicale vous répondront rapidement.</p>
+        <h5>{% if object %}Modifier la question{% else %}Poser une question{% endif %}</h5>
+        {% if not object %}<p class="text-gray-500">Les anciens membres de l'amicale vous répondront rapidement.</p>{% endif %}
         <form method="post">
           {% csrf_token %}
           {% for field in form %}
@@ -20,8 +20,12 @@
               {% endif %}
             </div>
           {% endfor %}
-          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition mt-3">Publier la question</button>
-          <a href="{% url 'forum:list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mt-3">Annuler</a>
+          <div class="flex gap-2 mt-3">
+            <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">
+              {% if object %}Enregistrer{% else %}Publier la question{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'forum:detail' object.pk %}{% else %}{% url 'forum:list' %}{% endif %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          </div>
         </form>
       </div>
     </div>

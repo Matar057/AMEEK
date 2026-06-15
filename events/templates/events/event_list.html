@@ -27,7 +27,13 @@
               {% if event.max_participants %} / {{ event.max_participants }}{% endif %}
             </li>
           </ul>
-          <a href="{% url 'events:detail' event.pk %}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Détails</a>
+          <div class="flex items-center gap-1">
+            <a href="{% url 'events:detail' event.pk %}" class="border border-amicale text-amicale px-3 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Détails</a>
+            {% if user.is_staff or user == event.organisateur %}
+              <a href="{% url 'events:update' event.pk %}" class="border border-amicale text-amicale px-2 py-1 rounded text-sm hover:bg-amicale hover:text-white transition">Modifier</a>
+              <a href="{% url 'events:delete' event.pk %}" class="border border-red-400 text-red-500 px-2 py-1 rounded text-sm hover:bg-red-500 hover:text-white transition">Supprimer</a>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>

@@ -8,6 +8,8 @@ urlpatterns = [
     path('publications/', views.PublicationListView.as_view(), name='publication_list'),
     path('publications/<int:pk>/', views.PublicationDetailView.as_view(), name='publication_detail'),
     path('publications/creer/', views.PublicationCreateView.as_view(), name='publication_create'),
+    path('publications/<int:pk>/modifier/', views.PublicationUpdateView.as_view(), name='publication_update'),
+    path('publications/<int:pk>/supprimer/', views.PublicationDeleteView.as_view(), name='publication_delete'),
 
     # Notifications
     path('notifications/', views.NotificationListView.as_view(), name='notification_list'),

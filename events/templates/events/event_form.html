@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Créer un événement - Amicale{% endblock %}
+{% block title %}{% if object %}Modifier l'événement{% else %}Créer un événement{% endif %} - Amicale{% endblock %}
 
 {% block content %}
 <div class="flex flex-wrap -mx-2 justify-center">
   <div class="w-full md:w-2/3 px-2 mb-4">
     <div class="bg-white rounded-xl shadow-md">
       <div class="p-4">
-        <h5>Créer un événement</h5>
+        <h5>{% if object %}Modifier l'événement{% else %}Créer un événement{% endif %}</h5>
         <form method="post">
           {% csrf_token %}
           {% for field in form %}
@@ -19,8 +19,12 @@
               {% endif %}
             </div>
           {% endfor %}
-          <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition mt-3">Créer</button>
-          <a href="{% url 'events:list' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mt-3">Annuler</a>
+          <div class="flex gap-2 mt-3">
+            <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">
+              {% if object %}Enregistrer{% else %}Créer{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'events:detail' object.pk %}{% else %}{% url 'events:list' %}{% endif %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
+          </div>
         </form>
       </div>
     </div>
