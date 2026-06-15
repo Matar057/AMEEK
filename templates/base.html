@@ -126,7 +126,7 @@
     {% endif %}
     {% if messages %}
       {% for message in messages %}
-        <div class="mb-4 px-4 py-3 rounded-lg border {% if message.tags == 'error' %}bg-red-100 border-red-300 text-red-800{% elif message.tags == 'success' %}bg-green-100 border-green-300 text-green-800{% else %}bg-blue-100 border-blue-300 text-blue-800{% endif %}" role="alert">
+        <div class="alert mb-4 px-4 py-3 rounded-lg border {% if message.tags == 'error' %}bg-red-100 border-red-300 text-red-800{% elif message.tags == 'success' %}bg-green-100 border-green-300 text-green-800{% else %}bg-blue-100 border-blue-300 text-blue-800{% endif %}" role="alert">
           {{ message }}
         </div>
       {% endfor %}
@@ -145,6 +145,13 @@
   <script>
     document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
       document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+    document.querySelectorAll('.alert').forEach(function(el) {
+      setTimeout(function() {
+        el.style.transition = 'opacity 0.5s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 500);
+      }, 4000);
     });
   </script>
   <script src="{% static 'js/main.js' %}"></script>
