@@ -5,21 +5,21 @@
 {% block content %}
 <h3 class="mb-4">Mes demandes de mentorat</h3>
 
-<ul class="flex border-b border-gray-200 mb-4" id="mentorshipTabs" role="tablist">
-  <li class="mr-1" role="presentation">
-    <button class="px-4 py-2 text-sm font-medium text-amicale border-b-2 border-amicale" id="as-mentee-tab" data-bs-toggle="tab" data-bs-target="#as-mentee" type="button" role="tab">
-      En tant que mentoré ({{ as_mentee|length }})
-    </button>
-  </li>
-  <li class="mr-1" role="presentation">
-    <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700" id="as-mentor-tab" data-bs-toggle="tab" data-bs-target="#as-mentor" type="button" role="tab">
-      En tant que mentor ({{ as_mentor|length }})
-    </button>
-  </li>
-</ul>
+<div x-data="{ tab: 'mentee' }">
+  <ul class="flex border-b border-gray-200 mb-4">
+    <li class="mr-1">
+      <button @click="tab = 'mentee'" :class="tab === 'mentee' ? 'text-amicale border-b-2 border-amicale' : 'text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium transition">
+        En tant que mentoré ({{ as_mentee|length }})
+      </button>
+    </li>
+    <li class="mr-1">
+      <button @click="tab = 'mentor'" :class="tab === 'mentor' ? 'text-amicale border-b-2 border-amicale' : 'text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium transition">
+        En tant que mentor ({{ as_mentor|length }})
+      </button>
+    </li>
+  </ul>
 
-<div class="tab-content" id="mentorshipTabsContent">
-  <div class="block" id="as-mentee" role="tabpanel">
+  <div x-show="tab === 'mentee'">
     {% for m in as_mentee %}
       <div class="bg-white rounded-xl shadow-md mb-3">
         <div class="p-4 flex items-center justify-between">
@@ -38,7 +38,7 @@
     {% endfor %}
   </div>
 
-  <div class="hidden" id="as-mentor" role="tabpanel">
+  <div x-show="tab === 'mentor'">
     {% for m in as_mentor %}
       <div class="bg-white rounded-xl shadow-md mb-3">
         <div class="p-4 flex items-center justify-between">
