@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Paiement{% if success %} réussi{% endif %} - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto text-center">
+  <div class="bg-white rounded-xl shadow-md p-8">
+    {% if success %}
+      <div class="text-green-500 text-6xl mb-4">✓</div>
+      <h3 class="text-2xl font-bold mb-2">Paiement confirmé !</h3>
+      <p class="text-gray-600 mb-6">Merci pour votre cotisation. Votre paiement a bien été enregistré.</p>
+      {% if payment %}
+        <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+          <dl class="text-sm">
+            <dt class="font-medium text-gray-700">Montant</dt>
+            <dd class="mb-2">{{ payment.montant }} FCFA</dd>
+            <dt class="font-medium text-gray-700">Référence</dt>
+            <dd class="mb-2">{{ payment.numero_recu }}</dd>
+            <dt class="font-medium text-gray-700">Date</dt>
+            <dd>{{ payment.date_paiement|date:"d/m/Y H:i" }}</dd>
+          </dl>
+        </div>
+        <a href="{% url 'payments:receipt' payment.pk %}" class="bg-amicale text-white px-6 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition inline-block">Télécharger le reçu</a>
+      {% endif %}
+    {% else %}
+      <div class="text-red-500 text-6xl mb-4">✗</div>
+      <h3 class="text-2xl font-bold mb-2">Paiement échoué</h3>
+      <p class="text-gray-600 mb-6">Le paiement n'a pas pu aboutir. Veuillez réessayer.</p>
+    {% endif %}
+    <div class="mt-4">
+      <a href="{% url 'payments:list' %}" class="text-amicale hover:underline">Retour à mes paiements</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -12,4 +12,8 @@ urlpatterns = [
     path('statistiques/', views.FinancialStatsView.as_view(), name='stats'),
     path('export/excel/', views.ExportPaymentsExcel.as_view(), name='export_excel'),
     path('export/pdf/', views.ExportPaymentsPDF.as_view(), name='export_pdf'),
+    path('paydunya/checkout/', views.PayDunyaCheckoutView.as_view(), name='paydunya_checkout'),
+    path('paydunya/ipn/', views.PayDunyaIPNView.as_view(), name='paydunya_ipn'),
+    path('paydunya/success/', views.PayDunyaSuccessView.as_view(), name='paydunya_success'),
+    path('paydunya/cancel/', views.PayDunyaCancelView.as_view(), name='paydunya_cancel'),
 ]

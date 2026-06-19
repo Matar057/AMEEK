@@ -1,13 +1,18 @@
 import io
+import logging
 from datetime import date, datetime
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, View, TemplateView
+from django.views.generic.edit import FormMixin
 
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
@@ -278,3 +283,127 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
             'latest_payments': latest_payments,
         })
         return context
+
+
+class PayDunyaCheckoutView(LoginRequiredMixin, View):
+    def get(self, request):
+        montant = request.GET.get('montant')
+        if not montant:
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+        try:
+            montant = int(montant)
+        except (ValueError, TypeError):
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+
+        from .paydunya import create_invoice, get_invoice_url
+
+        invoice_token, status = create_invoice(
+            montant=montant,
+            description='Cotisation AMEEK',
+            custom_data={'user_id': request.user.id, 'username': request.user.username},
+        )
+        if not invoice_token:
+            messages.error(request, 'Impossible de contacter PayDunya. Réessayez plus tard.')
+            return redirect('payments:list')
+
+        payment = Payment.objects.create(
+            member=request.user,
+            montant=montant,
+            date_paiement=timezone.now(),
+            mode_paiement='paydunya',
+            statut='en_attente',
+            invoice_token=invoice_token,
+        )
+
+        request.session['paydunya_payment_id'] = payment.pk
+        return redirect(get_invoice_url(invoice_token))
+
+
+class PayDunyaIPNView(View):
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request):
+        import json
+        try:
+            data = json.loads(request.body)
+        except (ValueError, TypeError):
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        invoice_token = data.get('invoice', {}).get('token')
+        status = data.get('invoice', {}).get('status')
+        transaction_id = data.get('invoice', {}).get('transaction_id', '')
+        payment_method = data.get('invoice', {}).get('payment_method', '')
+
+        if not invoice_token:
+            logger = logging.getLogger(__name__)
+            logger.error('PayDunya IPN missing invoice token: %s', data)
+            return JsonResponse({'error': 'Missing token'}, status=400)
+
+        from .paydunya import verify_invoice
+        result = verify_invoice(invoice_token)
+
+        try:
+            payment = Payment.objects.get(invoice_token=invoice_token)
+        except Payment.DoesNotExist:
+            return JsonResponse({'error': 'Payment not found'}, status=404)
+
+        if result and result['status'] == 'completed':
+            payment.statut = 'confirme'
+            payment.reference = transaction_id or payment.reference
+            if payment_method:
+                method_map = {
+                    'orange_money': 'orange_money',
+                    'wave': 'wave',
+                    'free_money': 'free_money',
+                    'wizall': 'autre',
+                    'card': 'carte',
+                    'cash': 'especes',
+                }
+                payment.mode_paiement = method_map.get(payment_method, 'paydunya')
+            payment.save(update_fields=['statut', 'reference', 'mode_paiement'])
+            from communication.email_utils import notify_payment_confirmed
+            notify_payment_confirmed(payment)
+        elif result and result['status'] == 'cancelled':
+            payment.statut = 'echoue'
+            payment.save(update_fields=['statut'])
+
+        return JsonResponse({'status': 'ok'})
+
+
+class PayDunyaSuccessView(LoginRequiredMixin, View):
+    def get(self, request):
+        payment_id = request.session.pop('paydunya_payment_id', None)
+        if payment_id:
+            try:
+                payment = Payment.objects.get(pk=payment_id, member=request.user)
+            except Payment.DoesNotExist:
+                payment = None
+        else:
+            payment = Payment.objects.filter(
+                member=request.user, statut='confirme'
+            ).order_by('-created_at').first()
+
+        return render(request, 'payments/paydunya_result.html', {
+            'success': True,
+            'payment': payment,
+        })
+
+
+class PayDunyaCancelView(LoginRequiredMixin, View):
+    def get(self, request):
+        payment_id = request.session.pop('paydunya_payment_id', None)
+        if payment_id:
+            try:
+                payment = Payment.objects.get(pk=payment_id, member=request.user)
+                if payment.statut == 'en_attente':
+                    payment.statut = 'echoue'
+                    payment.save(update_fields=['statut'])
+            except Payment.DoesNotExist:
+                payment = None
+
+        messages.info(request, 'Paiement annulé.')
+        return redirect('payments:list')
