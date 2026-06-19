@@ -10,6 +10,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, View, TemplateView
 from django.views.generic.edit import FormMixin
@@ -321,10 +322,8 @@ class PayDunyaCheckoutView(LoginRequiredMixin, View):
         return redirect(get_invoice_url(invoice_token))
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class PayDunyaIPNView(View):
-    @csrf_exempt
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
 
     def post(self, request):
         import json

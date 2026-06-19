@@ -1,4 +1,3 @@
-import hashlib
 import logging
 
 import requests
@@ -47,7 +46,7 @@ def create_invoice(montant, description, custom_data=None):
         'actions': {
             'cancel_url': f'{base_url}{reverse("payments:paydunya_cancel")}',
             'return_url': f'{base_url}{reverse("payments:paydunya_success")}',
-            'callback_url': settings.PAYDUNYA_IPN_URL,
+            'callback_url': f'{base_url}{reverse("payments:paydunya_ipn")}',
         },
         'custom_data': custom_data or {},
     }
