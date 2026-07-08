@@ -286,7 +286,6 @@ def notify_payment_confirmed(payment):
                 'montant': payment.montant,
                 'numero_recu': payment.numero_recu,
                 'date': payment.date_paiement.strftime('%d/%m/%Y %H:%M'),
-                'mode': payment.get_mode_paiement_display(),
                 'url': url,
             },
         )

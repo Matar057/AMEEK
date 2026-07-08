@@ -25,22 +25,10 @@ class Payment(models.Model):
         ('rembourse', 'Remboursé'),
     ]
 
-    MODE_CHOICES = [
-        ('especes', 'Espèces'),
-        ('virement', 'Virement bancaire'),
-        ('wave', 'Wave'),
-        ('orange_money', 'Orange Money'),
-        ('free_money', 'Free Money'),
-        ('carte', 'Carte bancaire'),
-        ('paydunya', 'PayDunya'),
-        ('autre', 'Autre'),
-    ]
-
     member = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
     montant = models.DecimalField('Montant', max_digits=10, decimal_places=0)
     date_paiement = models.DateTimeField('Date de paiement')
     reference = models.CharField('Référence', max_length=100, blank=True)
-    mode_paiement = models.CharField('Mode de paiement', max_length=20, choices=MODE_CHOICES, default='paydunya')
     statut = models.CharField('Statut', max_length=20, choices=STATUT_CHOICES, default='en_attente')
     invoice_token = models.CharField('Token PayDunya', max_length=100, blank=True)
     solde_restant = models.DecimalField('Solde restant', max_digits=10, decimal_places=0, default=0)

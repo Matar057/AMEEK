@@ -195,15 +195,6 @@ class BuyCardView(LoginRequiredMixin, FormView):
     def get_form(self):
         from django import forms
         class BuyCardForm(forms.Form):
-            mode_paiement = forms.ChoiceField(
-                label='Mode de paiement',
-                choices=[
-                    ('wave', 'Wave'),
-                    ('orange_money', 'Orange Money'),
-                    ('free_money', 'Free Money'),
-                ],
-                widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amicale focus:border-transparent'})
-            )
             reference = forms.CharField(
                 label='Référence (optionnelle)',
                 required=False,
@@ -220,7 +211,6 @@ class BuyCardView(LoginRequiredMixin, FormView):
         payment = Payment.objects.create(
             member=self.request.user,
             montant=settings.PRIX_CARTE_MEMBRE,
-            mode_paiement=form.cleaned_data['mode_paiement'],
             reference=form.cleaned_data.get('reference', ''),
             date_paiement=timezone.now(),
             solde_restant=0,

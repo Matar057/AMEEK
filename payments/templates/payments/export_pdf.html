@@ -13,13 +13,12 @@
 <body>
   <h1>Rapport des paiements — Amicale des Anciens</h1>
   <table>
-    <thead><tr><th>Date</th><th>Membre</th><th>Montant</th><th>Mode</th><th>Référence</th><th>Solde</th></tr></thead>
+    <thead><tr><th>Date</th><th>Membre</th><th>Montant</th><th>Référence</th><th>Solde</th></tr></thead>
     <tbody>
       {% for p in payments %}<tr>
         <td>{{ p.date_paiement|date:"d/m/Y" }}</td>
         <td>{{ p.member.get_full_name|default:p.member.username }}</td>
         <td>{{ p.montant }} FCFA</td>
-        <td>{{ p.get_mode_paiement_display }}</td>
         <td>{{ p.reference|default:"—" }}</td>
         <td>{{ p.solde_restant }} FCFA</td>
       </tr>{% endfor %}

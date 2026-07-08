@@ -27,32 +27,6 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
   <div class="bg-white rounded-xl shadow-md">
     <div class="px-4 py-3 border-b border-gray-100">
-      <h5 class="mb-0">Répartition par mode de paiement</h5>
-    </div>
-    <div class="p-4">
-      <div class="space-y-3">
-        {% for mode in mode_stats %}
-            <div>
-            <div class="flex justify-between text-sm mb-1">
-              <span class="font-medium">{{ mode.mode_label }}</span>
-              <span class="text-gray-600">{{ mode.total }} FCFA ({{ mode.count }} paiement{{ mode.count|pluralize }})</span>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-2">
-              {% if total_collected %}
-                {% widthratio mode.total total_collected 100 as pct %}
-                <div class="bg-amicale h-2 rounded-full" style="width: {{ pct }}%"></div>
-              {% endif %}
-            </div>
-          </div>
-        {% empty %}
-          <p class="text-gray-500 text-sm">Aucune donnée.</p>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-  <div class="bg-white rounded-xl shadow-md">
-    <div class="px-4 py-3 border-b border-gray-100">
       <h5 class="mb-0">Évolution mensuelle</h5>
     </div>
     <div class="p-4 max-h-80 overflow-y-auto">
@@ -91,7 +65,6 @@
           <th class="px-4 py-2">Date</th>
           <th class="px-4 py-2">Membre</th>
           <th class="px-4 py-2">Montant</th>
-          <th class="px-4 py-2">Mode</th>
           <th class="px-4 py-2">Référence</th>
           <th class="px-4 py-2">Reçu</th>
         </tr>
@@ -102,7 +75,6 @@
             <td class="px-4 py-2">{{ p.date_paiement|date:"d/m/Y H:i" }}</td>
             <td class="px-4 py-2">{{ p.member.get_full_name|default:p.member.username }}</td>
             <td class="px-4 py-2">{{ p.montant }} FCFA</td>
-            <td class="px-4 py-2">{{ p.get_mode_paiement_display }}</td>
             <td class="px-4 py-2">{{ p.reference|default:"—" }}</td>
             <td class="px-4 py-2">
               <a href="{% url 'payments:receipt' p.pk %}" class="text-amicale hover:text-amicale-fonce flex items-center gap-1">
@@ -112,7 +84,7 @@
             </td>
           </tr>
         {% empty %}
-          <tr><td colspan="6" class="text-center px-4 py-4 text-gray-500">Aucun paiement.</td></tr>
+          <tr><td colspan="5" class="text-center px-4 py-4 text-gray-500">Aucun paiement.</td></tr>
         {% endfor %}
       </tbody>
     </table>

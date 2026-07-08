@@ -117,16 +117,15 @@ class ExportPaymentsExcel(LoginRequiredMixin, View):
         workbook = xlsxwriter.Workbook(buffer)
         sheet = workbook.add_worksheet('Paiements')
         bold = workbook.add_format({'bold': True, 'bg_color': '#FF7F00', 'font_color': 'white'})
-        headers = ['Date', 'Membre', 'Montant', 'Mode', 'Référence', 'Solde']
+        headers = ['Date', 'Membre', 'Montant', 'Référence', 'Solde']
         for col, h in enumerate(headers):
             sheet.write(0, col, h, bold)
         for row, p in enumerate(qs, 1):
             sheet.write(row, 0, p.date_paiement.strftime('%d/%m/%Y'))
             sheet.write(row, 1, p.member.get_full_name() or p.member.username)
             sheet.write(row, 2, float(p.montant))
-            sheet.write(row, 3, p.get_mode_paiement_display())
-            sheet.write(row, 4, p.reference)
-            sheet.write(row, 5, float(p.solde_restant))
+            sheet.write(row, 3, p.reference)
+            sheet.write(row, 4, float(p.solde_restant))
         sheet.set_column(0, 5, 20)
         workbook.close()
         buffer.seek(0)
@@ -142,18 +141,18 @@ class ExportPaymentsPDF(LoginRequiredMixin, View):
         styles = getSampleStyleSheet()
         title_style = ParagraphStyle('Title', parent=styles['Heading1'], textColor=colors.Color(1, 0.5, 0), fontSize=16, spaceAfter=10)
         elements = [Paragraph('Rapport des paiements — AMEEK', title_style)]
-        data = [['Date', 'Membre', 'Email', 'Montant', 'Mode', 'Référence', 'Solde']]
+        data = [['Date', 'Membre', 'Email', 'Montant', 'Référence', 'Solde']]
         total = 0
         for p in qs:
             data.append([
                 p.date_paiement.strftime('%d/%m/%Y'),
                 str(p.member), p.member.email,
-                f'{p.montant} FCFA', p.get_mode_paiement_display(),
+                f'{p.montant} FCFA',
                 p.reference or '', f'{p.solde_restant} FCFA'
             ])
             total += p.montant
-        data.append(['', '', '', f'Total: {total} FCFA', '', '', ''])
-        table = Table(data, colWidths=[25*mm, 30*mm, 35*mm, 25*mm, 20*mm, 25*mm, 20*mm])
+        data.append(['', '', '', f'Total: {total} FCFA', '', ''])
+        table = Table(data, colWidths=[25*mm, 30*mm, 35*mm, 25*mm, 25*mm, 20*mm])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.Color(1, 0.5, 0)),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -206,8 +205,6 @@ class ReceiptPDF(LoginRequiredMixin, View):
              Paragraph(f'{payment.montant} FCFA', value_style)],
             [Paragraph('<b>Date</b>', value_style),
              Paragraph(payment.date_paiement.strftime('%d/%m/%Y %H:%M'), value_style)],
-            [Paragraph('<b>Mode</b>', value_style),
-             Paragraph(payment.get_mode_paiement_display(), value_style)],
         ]
         if payment.reference:
             data.append([Paragraph('<b>Référence</b>', value_style),
@@ -251,14 +248,6 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
         payment_count = all_payments.count()
         member_count = all_payments.aggregate(count=Count('member', distinct=True))['count'] or 0
 
-        mode_stats = (
-            all_payments.values('mode_paiement')
-            .annotate(total=Sum('montant'), count=Count('id'))
-            .order_by('-total')
-        )
-        for m in mode_stats:
-            m['mode_label'] = dict(Payment.MODE_CHOICES).get(m['mode_paiement'], m['mode_paiement'])
-
         monthly_stats = (
             all_payments
             .annotate(month=TruncMonth('date_paiement'))
@@ -279,7 +268,6 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
             'total_collected': total_collected,
             'payment_count': payment_count,
             'member_count': member_count,
-            'mode_stats': mode_stats,
             'monthly_stats': monthly_stats,
             'latest_payments': latest_payments,
         })
@@ -288,7 +276,7 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
 
 class PaymentMethodChoiceView(LoginRequiredMixin, View):
     def get(self, request):
-        montant = request.GET.get('montant')
+        montant = request.GET.get('montant') or request.GET.get('method')
         if not montant:
             messages.error(request, 'Montant invalide.')
             return redirect('payments:list')
@@ -298,7 +286,8 @@ class PaymentMethodChoiceView(LoginRequiredMixin, View):
             messages.error(request, 'Montant invalide.')
             return redirect('payments:list')
 
-        return render(request, 'payments/payment_choice.html', {'montant': montant})
+        from django.urls import reverse
+        return redirect(f'{reverse("payments:paydunya_checkout")}?montant={montant}')
 
 
 class PayDunyaCheckoutView(LoginRequiredMixin, View):
@@ -330,12 +319,10 @@ class PayDunyaCheckoutView(LoginRequiredMixin, View):
             messages.error(request, 'Impossible de contacter PayDunya. Réessayez plus tard.')
             return redirect('payments:list')
 
-        mode_map = {'wave': 'wave', 'orange_money': 'orange_money'}
         payment = Payment.objects.create(
             member=request.user,
             montant=montant,
             date_paiement=timezone.now(),
-            mode_paiement=mode_map.get(payment_method, 'paydunya'),
             statut='en_attente',
             invoice_token=invoice_token,
         )
@@ -375,17 +362,7 @@ class PayDunyaIPNView(View):
         if result and result['status'] == 'completed':
             payment.statut = 'confirme'
             payment.reference = transaction_id or payment.reference
-            if payment_method:
-                method_map = {
-                    'orange_money': 'orange_money',
-                    'wave': 'wave',
-                    'free_money': 'free_money',
-                    'wizall': 'autre',
-                    'card': 'carte',
-                    'cash': 'especes',
-                }
-                payment.mode_paiement = method_map.get(payment_method, 'paydunya')
-            payment.save(update_fields=['statut', 'reference', 'mode_paiement'])
+            payment.save(update_fields=['statut', 'reference'])
             from communication.email_utils import notify_payment_confirmed
             notify_payment_confirmed(payment)
         elif result and result['status'] == 'cancelled':
