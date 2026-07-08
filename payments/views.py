@@ -286,6 +286,21 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
         return context
 
 
+class PaymentMethodChoiceView(LoginRequiredMixin, View):
+    def get(self, request):
+        montant = request.GET.get('montant')
+        if not montant:
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+        try:
+            montant = int(montant)
+        except (ValueError, TypeError):
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+
+        return render(request, 'payments/payment_choice.html', {'montant': montant})
+
+
 class PayDunyaCheckoutView(LoginRequiredMixin, View):
     def get(self, request):
         montant = request.GET.get('montant')
@@ -298,22 +313,29 @@ class PayDunyaCheckoutView(LoginRequiredMixin, View):
             messages.error(request, 'Montant invalide.')
             return redirect('payments:list')
 
+        payment_method = request.GET.get('method', '')
+
         from .paydunya import create_invoice, get_invoice_url
 
         invoice_token, status = create_invoice(
             montant=montant,
             description='Cotisation AMEEK',
-            custom_data={'user_id': request.user.id, 'username': request.user.username},
+            custom_data={
+                'user_id': request.user.id,
+                'username': request.user.username,
+                'payment_method': payment_method,
+            },
         )
         if not invoice_token:
             messages.error(request, 'Impossible de contacter PayDunya. Réessayez plus tard.')
             return redirect('payments:list')
 
+        mode_map = {'wave': 'wave', 'orange_money': 'orange_money'}
         payment = Payment.objects.create(
             member=request.user,
             montant=montant,
             date_paiement=timezone.now(),
-            mode_paiement='paydunya',
+            mode_paiement=mode_map.get(payment_method, 'paydunya'),
             statut='en_attente',
             invoice_token=invoice_token,
         )

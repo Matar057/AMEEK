@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Choisir le mode de paiement - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="text-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Paiement de la cotisation</h2>
+    <p class="text-gray-500 mt-1">Montant : <strong>{{ montant }} FCFA</strong></p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <a href="{% url 'payments:paydunya_checkout' %}?montant={{ montant }}&method=wave"
+       class="block bg-white rounded-xl shadow-md hover:shadow-lg transition border-2 border-transparent hover:border-[#00A2E8] p-6 text-center group">
+      <div class="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+        <img src="{% static 'img/wave-logo.webp' %}" alt="Wave"
+             class="max-w-full max-h-full object-contain">
+      </div>
+      <h4 class="font-bold text-gray-800 text-lg">Wave</h4>
+      <p class="text-sm text-gray-500 mt-1">Payer avec Wave</p>
+    </a>
+
+    <a href="{% url 'payments:paydunya_checkout' %}?montant={{ montant }}&method=orange_money"
+       class="block bg-white rounded-xl shadow-md hover:shadow-lg transition border-2 border-transparent hover:border-orange-500 p-6 text-center group">
+      <div class="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+        <img src="{% static 'img/orange-money-logo.png' %}" alt="Orange Money"
+             class="max-w-full max-h-full object-contain">
+      </div>
+      <h4 class="font-bold text-gray-800 text-lg">Orange Money</h4>
+      <p class="text-sm text-gray-500 mt-1">Payer avec Orange Money</p>
+    </a>
+  </div>
+
+  <div class="mt-6 text-center">
+    <a href="{% url 'payments:paydunya_checkout' %}?montant={{ montant }}"
+       class="text-sm text-gray-400 hover:text-amicale underline">
+      Autres moyens de paiement (Carte bancaire, Free Money, etc.)
+    </a>
+  </div>
+
+  <div class="mt-6 text-center">
+    <a href="{% url 'payments:list' %}" class="text-gray-500 hover:text-gray-700 text-sm">Retour</a>
+  </div>
+</div>
+{% endblock %}
