@@ -2,15 +2,13 @@ import base64
 import io
 from io import BytesIO
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
-from django.views.generic import CreateView, UpdateView, DetailView, ListView, View, TemplateView, FormView
+from django.views.generic import CreateView, UpdateView, DetailView, ListView, View, TemplateView
 from django.contrib.auth.models import User
 
 from reportlab.lib import colors
@@ -25,10 +23,8 @@ import xlsxwriter
 import qrcode
 
 from .models import Profile
-from communication.email_utils import notify_payment_confirmed
 from .forms import ProfileForm, ProfileSearchForm
 from .mixins import CarteRequiredMixin
-from payments.models import Payment
 
 
 class ProfileCreateView(LoginRequiredMixin, CreateView):
@@ -186,58 +182,6 @@ class MemberCardView(CarteRequiredMixin, LoginRequiredMixin, TemplateView):
             'qr_b64': qr_b64,
         })
         return context
-
-
-class BuyCardView(LoginRequiredMixin, FormView):
-    template_name = 'profiles/buy_card.html'
-    success_url = reverse_lazy('profiles:update')
-
-    def get_form(self):
-        from django import forms
-        class BuyCardForm(forms.Form):
-            reference = forms.CharField(
-                label='Référence (optionnelle)',
-                required=False,
-                widget=forms.TextInput(attrs={'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amicale focus:border-transparent', 'placeholder': 'Ex: Wave-12345'})
-            )
-        return BuyCardForm(self.request.POST or None)
-
-    def form_valid(self, form):
-        profile, _ = Profile.objects.get_or_create(user=self.request.user)
-        if profile.carte_achetee:
-            messages.info(self.request, 'Vous avez déjà acheté votre carte membre.')
-            return redirect('profiles:update')
-
-        payment = Payment.objects.create(
-            member=self.request.user,
-            montant=settings.PRIX_CARTE_MEMBRE,
-            reference=form.cleaned_data.get('reference', ''),
-            date_paiement=timezone.now(),
-            solde_restant=0,
-            notes='Achat carte membre',
-        )
-        profile.carte_achetee = True
-        profile.date_achat_carte = timezone.now()
-        profile.save(update_fields=['carte_achetee', 'date_achat_carte'])
-
-        notify_payment_confirmed(payment)
-        messages.success(self.request,
-            f'Félicitations ! Votre carte membre a été activée. Bienvenue à l\'AMEEK !')
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['prix_carte'] = settings.PRIX_CARTE_MEMBRE
-        profile = getattr(self.request.user, 'profile', None)
-        context['carte_deja_achetee'] = profile is not None and profile.carte_achetee
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        profile = getattr(request.user, 'profile', None)
-        if profile and profile.carte_achetee:
-            messages.info(request, 'Vous possédez déjà votre carte membre.')
-            return redirect('profiles:update')
-        return super().dispatch(request, *args, **kwargs)
 
 
 class MemberCardPDF(CarteRequiredMixin, LoginRequiredMixin, View):

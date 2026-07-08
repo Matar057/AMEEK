@@ -10,7 +10,7 @@ urlpatterns = [
     path('update/', views.ProfileUpdateView.as_view(), name='update'),
     path('membres/', views.MemberListView.as_view(), name='member_list'),
     path('membres/<str:username>/', views.ProfileDetailView.as_view(), name='member_detail'),
-    path('carte/acheter/', views.BuyCardView.as_view(), name='buy_card'),
+
     path('export/excel/', views.ExportMembersExcel.as_view(), name='export_members_excel'),
     path('export/pdf/', views.ExportMembersPDF.as_view(), name='export_members_pdf'),
     path('carte/', views.MemberCardView.as_view(), name='member_card'),

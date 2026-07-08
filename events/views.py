@@ -51,11 +51,6 @@ class EventCreateView(CarteRequiredMixin, LoginRequiredMixin, CreateView):
 def register_event(request, pk):
     event = get_object_or_404(Event, pk=pk)
     if request.user.is_authenticated:
-        profile = getattr(request.user, 'profile', None)
-        if not profile or not profile.carte_achetee:
-            if not request.user.is_staff:
-                messages.warning(request, 'Vous devez acheter votre carte membre pour vous inscrire à un événement.')
-                return redirect('profiles:buy_card')
         if request.user in event.participants.all():
             messages.info(request, f"Vous êtes déjà inscrit à {event.titre}")
         elif event.places_restantes is None or event.places_restantes > 0:

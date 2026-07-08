@@ -118,12 +118,7 @@
   </nav>
 
   <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
-    {% if user.is_authenticated and not user.is_staff and user.profile.carte_achetee == False %}
-      <div class="mb-4 px-4 py-3 rounded-lg border bg-orange-100 border-orange-300 text-orange-800 flex items-center justify-between" role="alert">
-        <span>⚠ Vous n'avez pas encore acheté votre carte membre. Certaines fonctionnalités sont limitées.</span>
-        <a href="{% url 'profiles:buy_card' %}" class="ml-2 bg-amicale text-white px-4 py-1.5 rounded text-sm hover:bg-amicale-fonce transition whitespace-nowrap">Acheter ma carte</a>
-      </div>
-    {% endif %}
+
     {% if messages %}
       {% for message in messages %}
         <div class="alert mb-4 px-4 py-3 rounded-lg border {% if message.tags == 'error' %}bg-red-100 border-red-300 text-red-800{% elif message.tags == 'success' %}bg-green-100 border-green-300 text-green-800{% else %}bg-blue-100 border-blue-300 text-blue-800{% endif %}" role="alert">
