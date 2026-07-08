@@ -12,7 +12,7 @@
           {% csrf_token %}
           {% for field in form %}
             <div class="mb-4">
-              <label class="block text-gray-700 font-medium mb-1">{{ field.label }}</label>
+              <label class="block text-gray-700 font-medium mb-1">{{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ field }}
               {% if field.help_text %}
                 <p class="text-gray-500 text-xs mt-1">{{ field.help_text }}</p>
@@ -22,6 +22,8 @@
               {% endif %}
             </div>
           {% endfor %}
+          <p class="text-xs text-gray-400 mb-2"><span class="text-red-500">*</span> Champs obligatoires</p>
+          <p class="text-xs text-gray-400 mb-4">Mot de passe : 8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial (!@#$%^&amp;*...)</p>
           <button type="submit" class="bg-amicale text-white w-full px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition mt-3">S'inscrire</button>
         </form>
         <p class="text-center mt-3 mb-0">
