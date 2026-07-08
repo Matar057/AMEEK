@@ -21,8 +21,12 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
-            if field not in ('date_naissance', 'bio', 'adresse'):
-                self.fields[field].widget.attrs['class'] = TW_FORM_INPUT
+            self.fields[field].widget.attrs['class'] = TW_FORM_INPUT
+        for field in self.fields:
+            if field in ('bio', 'adresse'):
+                self.fields[field].required = False
+            else:
+                self.fields[field].required = True
 
 
 class ProfileSearchForm(forms.Form):

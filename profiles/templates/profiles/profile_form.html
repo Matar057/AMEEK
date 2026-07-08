@@ -12,73 +12,73 @@
           {% csrf_token %}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.telephone.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.telephone.label }}{% if form.telephone.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.telephone }}
               {% if form.telephone.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.telephone.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.telephone.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.date_naissance.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.date_naissance.label }}{% if form.date_naissance.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.date_naissance }}
               {% if form.date_naissance.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.date_naissance.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.date_naissance.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.promotion_bac.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.promotion_bac.label }}{% if form.promotion_bac.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.promotion_bac }}
               {% if form.promotion_bac.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.promotion_bac.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.promotion_bac.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.serie.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.serie.label }}{% if form.serie.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.serie }}
               {% if form.serie.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.serie.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.serie.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.universite.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.universite.label }}{% if form.universite.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.universite }}
               {% if form.universite.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.universite.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.universite.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.filiere.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.filiere.label }}{% if form.filiere.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.filiere }}
               {% if form.filiere.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.filiere.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.filiere.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.profession.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.profession.label }}{% if form.profession.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.profession }}
               {% if form.profession.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.profession.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.profession.errors.0 }}</p>
               {% endif %}
             </div>
             <div>
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.photo.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.photo.label }}{% if form.photo.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.photo }}
               {% if form.photo.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.photo.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.photo.errors.0 }}</p>
               {% endif %}
             </div>
             <div class="md:col-span-2">
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.adresse.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.adresse.label }}{% if form.adresse.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.adresse }}
               {% if form.adresse.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.adresse.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.adresse.errors.0 }}</p>
               {% endif %}
             </div>
             <div class="md:col-span-2">
-              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.bio.label }}</label>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.bio.label }}{% if form.bio.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.bio }}
               {% if form.bio.errors %}
-                <p class="text-red-500 text-xs mt-1">{{ form.bio.errors.0 }}</p>
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.bio.errors.0 }}</p>
               {% endif %}
             </div>
             <div class="md:col-span-2">
@@ -93,7 +93,8 @@
               {% endif %}
             </div>
           </div>
-          <div class="mt-6 flex gap-2">
+          <p class="text-xs text-gray-400 mt-4"><span class="text-red-500">*</span> Champs obligatoires</p>
+          <div class="mt-2 flex gap-2">
             <button type="submit" class="bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition">Enregistrer</button>
             <a href="{% url 'accounts:profile' %}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg">Annuler</a>
           </div>
