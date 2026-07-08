@@ -18,10 +18,8 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         profile = self.object.profile
-        statut = form.cleaned_data.get('statut', '')
-        if statut:
-            profile.statut = statut
-            profile.save(update_fields=['statut'])
+        profile.statut = form.cleaned_data['statut']
+        profile.save(update_fields=['statut'])
         login(self.request, self.object)
         return response
 
