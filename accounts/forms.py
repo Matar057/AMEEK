@@ -9,13 +9,13 @@ TW_FORM_INPUT = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outlin
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': TW_FORM_INPUT}))
-    first_name = forms.CharField(max_length=30, required=True, label='Prénom',
+    first_name = forms.CharField(max_length=30, required=False, label='Prénom',
                                  widget=forms.TextInput(attrs={'class': TW_FORM_INPUT}))
-    last_name = forms.CharField(max_length=30, required=True, label='Nom',
+    last_name = forms.CharField(max_length=30, required=False, label='Nom',
                                 widget=forms.TextInput(attrs={'class': TW_FORM_INPUT}))
 
     statut = forms.ChoiceField(
-        choices=Profile.STATUT_CHOICES, required=True, label='Je suis',
+        choices=[('', '--- Sélectionnez ---')] + Profile.STATUT_CHOICES, required=False, label='Je suis',
         widget=forms.Select(attrs={'class': TW_FORM_INPUT}),
     )
 
