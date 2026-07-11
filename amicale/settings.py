@@ -5,11 +5,11 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-change-me-in-production')
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
-DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost,.onrender.com', cast=Csv())
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', default='127.0.0.1,localhost,ameek-1.onrender.com', cast=Csv())
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -115,15 +115,14 @@ CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5_242_880  # 5 MB
 # HTTPS-only settings (enable in production)
-if not DEBUG:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://*.onrender.com', cast=Csv())
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = config('FORCE_HTTPS', default=not DEBUG, cast=bool)
+SECURE_HSTS_SECONDS = config('FORCE_HTTPS', default=not DEBUG, cast=bool) * 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = config('FORCE_HTTPS', default=not DEBUG, cast=bool)
+SECURE_HSTS_PRELOAD = config('FORCE_HTTPS', default=not DEBUG, cast=bool)
+SESSION_COOKIE_SECURE = config('FORCE_HTTPS', default=not DEBUG, cast=bool)
+CSRF_COOKIE_SECURE = config('FORCE_HTTPS', default=not DEBUG, cast=bool)
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='https://ameek-1.onrender.com', cast=Csv())
 
 STORAGES = {
     'default': {
@@ -187,7 +186,7 @@ LOGGING = {
         },
         'payments.paydunya': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': False,
         },
     },

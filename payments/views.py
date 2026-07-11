@@ -1,4 +1,5 @@
 import io
+import ipaddress
 import logging
 from datetime import date, datetime
 
@@ -110,7 +111,10 @@ class PaymentReportsView(UserPassesTestMixin, ListView):
         return context
 
 
-class ExportPaymentsExcel(LoginRequiredMixin, View):
+class ExportPaymentsExcel(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+
     def get(self, request):
         qs = Payment.objects.all().select_related('member')
         buffer = io.BytesIO()
@@ -133,7 +137,10 @@ class ExportPaymentsExcel(LoginRequiredMixin, View):
                             headers={'Content-Disposition': 'attachment; filename="paiements.xlsx"'})
 
 
-class ExportPaymentsPDF(LoginRequiredMixin, View):
+class ExportPaymentsPDF(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+
     def get(self, request):
         qs = Payment.objects.all().select_related('member')
         buffer = io.BytesIO()
@@ -333,21 +340,47 @@ class PayDunyaCheckoutView(LoginRequiredMixin, View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class PayDunyaIPNView(View):
+    ALLOWED_IPS = ['51.68.255.0/24']
+
+    def _is_allowed_ip(self, request):
+        ip = request.META.get('REMOTE_ADDR', '')
+        import ipaddress
+        try:
+            addr = ipaddress.ip_address(ip)
+            return any(addr in ipaddress.ip_network(cidr) for cidr in self.ALLOWED_IPS)
+        except ValueError:
+            return False
 
     def post(self, request):
         import json
+        import hashlib
+        import hmac
+        from django.conf import settings
+
+        ip = request.META.get('REMOTE_ADDR', '')
+        logger = logging.getLogger(__name__)
+
+        signature = request.META.get('HTTP_PAYDUNYA_HMAC_SHA256', '')
+        raw_body = request.body
+
+        if signature and settings.PAYDUNYA_PRIVATE_KEY:
+            expected = hmac.new(
+                settings.PAYDUNYA_PRIVATE_KEY.encode(),
+                raw_body,
+                hashlib.sha256,
+            ).hexdigest()
+            if not hmac.compare_digest(expected, signature):
+                logger.warning('PayDunya IPN invalid HMAC from %s', ip)
+                return JsonResponse({'error': 'Invalid signature'}, status=403)
+
         try:
-            data = json.loads(request.body)
+            data = json.loads(raw_body)
         except (ValueError, TypeError):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
         invoice_token = data.get('invoice', {}).get('token')
-        status = data.get('invoice', {}).get('status')
-        transaction_id = data.get('invoice', {}).get('transaction_id', '')
-        payment_method = data.get('invoice', {}).get('payment_method', '')
 
         if not invoice_token:
-            logger = logging.getLogger(__name__)
             logger.error('PayDunya IPN missing invoice token: %s', data)
             return JsonResponse({'error': 'Missing token'}, status=400)
 
@@ -361,7 +394,7 @@ class PayDunyaIPNView(View):
 
         if result and result['status'] == 'completed':
             payment.statut = 'confirme'
-            payment.reference = transaction_id or payment.reference
+            payment.reference = data.get('invoice', {}).get('transaction_id', '') or payment.reference
             payment.save(update_fields=['statut', 'reference'])
             from communication.email_utils import notify_payment_confirmed
             notify_payment_confirmed(payment)

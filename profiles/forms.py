@@ -1,7 +1,11 @@
+import mimetypes
+
 from django import forms
 from .models import Profile
 
 TW_FORM_INPUT = 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amicale focus:border-transparent'
+ALLOWED_PHOTO_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+MAX_PHOTO_SIZE = 2 * 1024 * 1024
 
 
 class ProfileForm(forms.ModelForm):
@@ -27,6 +31,26 @@ class ProfileForm(forms.ModelForm):
                 self.fields[field].required = False
             else:
                 self.fields[field].required = True
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if not photo:
+            return photo
+
+        if photo.size > MAX_PHOTO_SIZE:
+            raise forms.ValidationError('La photo ne doit pas dépasser 2 Mo.')
+
+        ext = photo.name.rsplit('.', 1)[-1].lower() if '.' in photo.name else ''
+        if ext not in ALLOWED_PHOTO_EXTENSIONS:
+            raise forms.ValidationError(
+                f'Extension .{ext} non autorisée. Formats acceptés : {", ".join(ALLOWED_PHOTO_EXTENSIONS)}'
+            )
+
+        content_type, _ = mimetypes.guess_type(photo.name)
+        if content_type and not content_type.startswith('image/'):
+            raise forms.ValidationError('Seules les images sont autorisées.')
+
+        return photo
 
 
 class ProfileSearchForm(forms.Form):

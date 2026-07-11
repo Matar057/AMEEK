@@ -26,13 +26,7 @@ def _headers():
 
 def create_invoice(montant, description, custom_data=None):
     base_url = settings.BASE_URL.rstrip('/')
-    logger.info(
-        'PayDunya keys: MASTER_KEY=%s..., PRIVATE_KEY=%s..., TOKEN=%s..., MODE=%s',
-        settings.PAYDUNYA_MASTER_KEY[:10] if settings.PAYDUNYA_MASTER_KEY else 'EMPTY',
-        settings.PAYDUNYA_PRIVATE_KEY[:10] if settings.PAYDUNYA_PRIVATE_KEY else 'EMPTY',
-        settings.PAYDUNYA_TOKEN[:10] if settings.PAYDUNYA_TOKEN else 'EMPTY',
-        settings.PAYDUNYA_MODE,
-    )
+    logger.debug('Creating PayDunya invoice of %s FCFA (mode: %s)', montant, settings.PAYDUNYA_MODE)
     data = {
         'invoice': {
             'items': [

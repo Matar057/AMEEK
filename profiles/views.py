@@ -3,7 +3,7 @@ import io
 from io import BytesIO
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -100,7 +100,10 @@ class MemberListView(CarteRequiredMixin, ListView):
         return context
 
 
-class ExportMembersExcel(View):
+class ExportMembersExcel(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+
     def get(self, request):
         users = User.objects.filter(profile__est_visible=True).select_related('profile')
         buffer = io.BytesIO()
@@ -127,7 +130,10 @@ class ExportMembersExcel(View):
                             headers={'Content-Disposition': 'attachment; filename="membres.xlsx"'})
 
 
-class ExportMembersPDF(View):
+class ExportMembersPDF(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+
     def get(self, request):
         users = User.objects.filter(profile__est_visible=True).select_related('profile')
         buffer = io.BytesIO()
