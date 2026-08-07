@@ -147,15 +147,6 @@ EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=10, cast=int)
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='AMEEK <noreply@ameek.sn>')
 BASE_URL = config('BASE_URL', default='http://127.0.0.1:8000')
 
-# --------------------------------------------------
-# PayDunya
-# --------------------------------------------------
-PAYDUNYA_MASTER_KEY = config('PAYDUNYA_MASTER_KEY', default='')
-PAYDUNYA_PRIVATE_KEY = config('PAYDUNYA_PRIVATE_KEY', default='')
-PAYDUNYA_PUBLIC_KEY = config('PAYDUNYA_PUBLIC_KEY', default='')
-PAYDUNYA_TOKEN = config('PAYDUNYA_TOKEN', default='')
-PAYDUNYA_MODE = config('PAYDUNYA_MODE', default='test')
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -182,11 +173,6 @@ LOGGING = {
         'communication.email_utils': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'WARNING',
-            'propagate': False,
-        },
-        'payments.paydunya': {
-            'handlers': ['console'],
-            'level': 'WARNING',
             'propagate': False,
         },
     },

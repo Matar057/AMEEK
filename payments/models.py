@@ -30,7 +30,6 @@ class Payment(models.Model):
     date_paiement = models.DateTimeField('Date de paiement')
     reference = models.CharField('Référence', max_length=100, blank=True)
     statut = models.CharField('Statut', max_length=20, choices=STATUT_CHOICES, default='en_attente')
-    invoice_token = models.CharField('Token PayDunya', max_length=100, blank=True)
     solde_restant = models.DecimalField('Solde restant', max_digits=10, decimal_places=0, default=0)
     notes = models.TextField('Notes', blank=True)
     numero_recu = models.CharField('Numéro de reçu', max_length=20, unique=True, blank=True, null=True)
