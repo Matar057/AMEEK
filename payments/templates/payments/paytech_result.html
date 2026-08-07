@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Paiement PayTech - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="bg-white rounded-xl shadow-md p-8 text-center">
+    {% if success %}
+      <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-green-100">
+        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Paiement en cours de confirmation</h2>
+      <p class="text-gray-500 mb-1">Votre paiement a été initié sur PayTech.</p>
+      {% if payment %}
+        <p class="text-gray-500">
+          Montant : <strong>{{ payment.montant }} FCFA</strong>
+          {% if payment.reference %}— Réf. {{ payment.reference }}{% endif %}
+        </p>
+      {% endif %}
+      <p class="text-sm text-gray-400 mt-3">
+        Vous recevrez une confirmation dès que le paiement sera validé.
+      </p>
+    {% else %}
+      <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-red-100">
+        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800 mb-2">Paiement non abouti</h2>
+      <p class="text-gray-500">Le paiement a été annulé ou a échoué. Réessayez si besoin.</p>
+    {% endif %}
+
+    <a href="{% url 'payments:list' %}" class="inline-block bg-amicale text-white px-4 py-2 rounded-lg font-medium hover:bg-amicale-fonce transition mt-5">
+      Retour aux cotisations
+    </a>
+  </div>
+</div>
+{% endblock %}

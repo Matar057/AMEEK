@@ -1,12 +1,19 @@
 import io
+import logging
+import time
 from datetime import date, datetime
 
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, CreateView, DetailView, View, TemplateView
 from django.views.generic.edit import FormMixin
 
@@ -179,7 +186,7 @@ class ReceiptPDF(LoginRequiredMixin, View):
         if not request.user.is_staff and payment.member != request.user:
             return HttpResponse('Accès non autorisé.', status=403)
 
-        buffer = BytesIO()
+        buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=(90*mm, 100*mm),
                                 leftMargin=4*mm, rightMargin=4*mm,
                                 topMargin=4*mm, bottomMargin=4*mm)
@@ -273,6 +280,138 @@ class FinancialStatsView(UserPassesTestMixin, TemplateView):
             'latest_payments': latest_payments,
         })
         return context
+
+
+class PaymentChoiceView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'payments/payment_choice.html', {
+            'montant': request.GET.get('montant', ''),
+        })
+
+
+class PayTechCheckoutView(LoginRequiredMixin, View):
+    def get(self, request):
+        montant = request.GET.get('montant')
+        if not montant:
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+        try:
+            montant = int(montant)
+        except (ValueError, TypeError):
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+        if montant <= 0:
+            messages.error(request, 'Montant invalide.')
+            return redirect('payments:list')
+
+        method = request.GET.get('method', '')
+
+        from .paytech import create_payment
+
+        ref_command = f'AMK{request.user.pk}T{int(time.time())}'
+        token, redirect_url = create_payment(
+            montant=montant,
+            description='Cotisation AMEEK',
+            ref_command=ref_command,
+            custom_data={
+                'user_id': request.user.id,
+                'username': request.user.username,
+            },
+            method=method,
+        )
+        if not token or not redirect_url:
+            messages.error(request, 'Impossible de contacter PayTech. Réessayez plus tard.')
+            return redirect('payments:list')
+
+        payment = Payment.objects.create(
+            member=request.user,
+            montant=montant,
+            date_paiement=timezone.now(),
+            statut='en_attente',
+            paytech_token=token,
+            reference=ref_command,
+        )
+
+        request.session['paytech_payment_id'] = payment.pk
+        return redirect(redirect_url)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PayTechIPNView(View):
+    def post(self, request):
+        logger = logging.getLogger(__name__)
+
+        if not settings.PAYTECH_API_KEY or not settings.PAYTECH_API_SECRET:
+            return JsonResponse({'error': 'PayTech not configured'}, status=500)
+
+        from .paytech import verify_ipn
+
+        if not verify_ipn(request.POST):
+            logger.warning('PayTech IPN invalid signature')
+            return JsonResponse({'error': 'Invalid signature'}, status=403)
+
+        token = request.POST.get('token', '')
+        ref_command = request.POST.get('ref_command', '')
+        type_event = request.POST.get('type_event', '')
+
+        payment = Payment.objects.filter(paytech_token=token).first()
+        if not payment and ref_command:
+            payment = Payment.objects.filter(reference=ref_command).first()
+        if not payment:
+            logger.error('PayTech IPN: payment not found (token=%s, ref=%s)', token, ref_command)
+            return JsonResponse({'error': 'Payment not found'}, status=404)
+
+        if type_event == 'sale_complete':
+            payment.statut = 'confirme'
+            payment.reference = ref_command or payment.reference
+            payment.save(update_fields=['statut', 'reference'])
+            from communication.email_utils import notify_payment_confirmed
+            notify_payment_confirmed(payment)
+        elif type_event == 'sale_canceled':
+            if payment.statut == 'en_attente':
+                payment.statut = 'echoue'
+                payment.save(update_fields=['statut'])
+
+        return JsonResponse({'status': 'ok'})
+
+
+class PayTechSuccessView(LoginRequiredMixin, View):
+    def get(self, request):
+        payment_id = request.session.pop('paytech_payment_id', None)
+        payment = None
+        if payment_id:
+            try:
+                payment = Payment.objects.get(pk=payment_id, member=request.user)
+            except Payment.DoesNotExist:
+                payment = None
+        if payment and payment.statut == 'en_attente':
+            from .paytech import get_status
+            result = get_status(payment.paytech_token)
+            transaction = (result or {}).get('transaction') or {}
+            if transaction.get('status') == 102:
+                payment.statut = 'confirme'
+                payment.save(update_fields=['statut'])
+
+        return render(request, 'payments/paytech_result.html', {
+            'success': True,
+            'payment': payment,
+        })
+
+
+class PayTechCancelView(LoginRequiredMixin, View):
+    def get(self, request):
+        payment_id = request.session.pop('paytech_payment_id', None)
+        if payment_id:
+            try:
+                payment = Payment.objects.get(pk=payment_id, member=request.user)
+                if payment.statut == 'en_attente':
+                    payment.statut = 'echoue'
+                    payment.save(update_fields=['statut'])
+            except Payment.DoesNotExist:
+                payment = None
+
+        messages.info(request, 'Paiement annulé.')
+        return redirect('payments:list')
 
 
 

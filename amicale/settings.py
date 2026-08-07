@@ -147,6 +147,13 @@ EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=10, cast=int)
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='AMEEK <noreply@ameek.sn>')
 BASE_URL = config('BASE_URL', default='http://127.0.0.1:8000')
 
+# --------------------------------------------------
+# PayTech (payment gateway)
+# --------------------------------------------------
+PAYTECH_API_KEY = config('PAYTECH_API_KEY', default='')
+PAYTECH_API_SECRET = config('PAYTECH_API_SECRET', default='')
+PAYTECH_MODE = config('PAYTECH_MODE', default='test')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -173,6 +180,11 @@ LOGGING = {
         'communication.email_utils': {
             'handlers': ['console'],
             'level': 'DEBUG' if DEBUG else 'WARNING',
+            'propagate': False,
+        },
+        'payments.paytech': {
+            'handlers': ['console'],
+            'level': 'WARNING',
             'propagate': False,
         },
     },
