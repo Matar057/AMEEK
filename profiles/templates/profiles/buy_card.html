@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Payer ma carte membre - AMEEK{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+  <div class="text-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Carte membre AMEEK</h2>
+    <p class="text-gray-500 mt-1">Le paiement de la carte est requis pour accéder au site</p>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-md p-6">
+    <div class="text-center mb-6">
+      <p class="text-gray-500">Tarif de la carte membre</p>
+      <p class="text-4xl font-bold text-amicale">{{ prix_carte }} FCFA</p>
+    </div>
+
+    <a href="{% url 'payments:paytech_checkout' %}?montant={{ prix_carte }}&purpose=carte"
+       class="block bg-amicale text-white text-center px-4 py-3 rounded-lg font-medium hover:bg-amicale-fonce transition">
+      Payer avec PayTech
+    </a>
+    <p class="text-xs text-gray-400 text-center mt-3">Orange Money, Wave, Free Money, Carte bancaire</p>
+  </div>
+</div>
+{% endblock %}

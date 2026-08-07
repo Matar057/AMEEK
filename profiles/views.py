@@ -2,11 +2,12 @@ import base64
 import io
 from io import BytesIO
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DetailView, ListView, View, TemplateView
 from django.contrib.auth.models import User
@@ -53,6 +54,26 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         profile, _ = Profile.objects.get_or_create(user=self.request.user)
         return profile
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if not self.object.carte_achetee:
+            return redirect('profiles:buy_card')
+        return response
+
+
+class BuyCardView(LoginRequiredMixin, View):
+    def dispatch(self, request, *args, **kwargs):
+        profile = getattr(request.user, 'profile', None)
+        if profile and profile.carte_achetee:
+            messages.info(request, 'Vous avez déjà acheté votre carte membre.')
+            return redirect('profiles:member_card')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return render(request, 'profiles/buy_card.html', {
+            'prix_carte': settings.PRIX_CARTE_MEMBRE,
+        })
 
 
 class ProfileDetailView(DetailView):

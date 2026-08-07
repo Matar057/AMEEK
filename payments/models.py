@@ -31,6 +31,7 @@ class Payment(models.Model):
     reference = models.CharField('Référence', max_length=100, blank=True)
     statut = models.CharField('Statut', max_length=20, choices=STATUT_CHOICES, default='en_attente')
     paytech_token = models.CharField('Token PayTech', max_length=100, blank=True)
+    est_achat_carte = models.BooleanField('Achat carte membre', default=False)
     solde_restant = models.DecimalField('Solde restant', max_digits=10, decimal_places=0, default=0)
     notes = models.TextField('Notes', blank=True)
     numero_recu = models.CharField('Numéro de reçu', max_length=20, unique=True, blank=True, null=True)

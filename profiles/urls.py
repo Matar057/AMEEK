@@ -15,4 +15,5 @@ urlpatterns = [
     path('export/pdf/', views.ExportMembersPDF.as_view(), name='export_members_pdf'),
     path('carte/', views.MemberCardView.as_view(), name='member_card'),
     path('carte/pdf/', views.MemberCardPDF.as_view(), name='card_pdf'),
+    path('carte/acheter/', views.BuyCardView.as_view(), name='buy_card'),
 ]

@@ -35,7 +35,7 @@ class TypeMembreFilter(admin.SimpleListFilter):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'type_membre', 'promotion_bac', 'serie', 'universite', 'filiere', 'est_mentor')
-    list_filter = ('est_mentor', 'serie', 'promotion_bac', TypeMembreFilter)
+    list_display = ('user', 'type_membre', 'promotion_bac', 'serie', 'universite', 'filiere', 'carte_achetee', 'date_achat_carte', 'est_mentor')
+    list_filter = ('est_mentor', 'carte_achetee', 'serie', 'promotion_bac', TypeMembreFilter)
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'universite', 'filiere', 'profession')
     list_select_related = ('user',)

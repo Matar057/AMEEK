@@ -289,12 +289,27 @@ class PaymentChoiceView(LoginRequiredMixin, View):
         })
 
 
+def _activate_member_card(payment):
+    """Marque le profil comme ayant acheté sa carte membre."""
+    if not payment.est_achat_carte:
+        return
+    profile = getattr(payment.member, 'profile', None)
+    if profile and not profile.carte_achetee:
+        profile.carte_achetee = True
+        profile.date_achat_carte = timezone.now()
+        profile.save(update_fields=['carte_achetee', 'date_achat_carte'])
+
+
 class PayTechCheckoutView(LoginRequiredMixin, View):
     def get(self, request):
         montant = request.GET.get('montant')
-        if not montant:
-            messages.error(request, 'Montant invalide.')
-            return redirect('payments:list')
+        purpose = request.GET.get('purpose', '')
+        if purpose == 'carte':
+            montant = settings.PRIX_CARTE_MEMBRE
+        else:
+            if not montant:
+                messages.error(request, 'Montant invalide.')
+                return redirect('payments:list')
         try:
             montant = int(montant)
         except (ValueError, TypeError):
@@ -308,14 +323,22 @@ class PayTechCheckoutView(LoginRequiredMixin, View):
 
         from .paytech import create_payment
 
+        if purpose == 'carte':
+            description = 'Carte membre AMEEK'
+            est_achat_carte = True
+        else:
+            description = 'Cotisation AMEEK'
+            est_achat_carte = False
+
         ref_command = f'AMK{request.user.pk}T{int(time.time())}'
         token, redirect_url = create_payment(
             montant=montant,
-            description='Cotisation AMEEK',
+            description=description,
             ref_command=ref_command,
             custom_data={
                 'user_id': request.user.id,
                 'username': request.user.username,
+                'purpose': purpose or 'cotisation',
             },
             method=method,
         )
@@ -330,6 +353,7 @@ class PayTechCheckoutView(LoginRequiredMixin, View):
             statut='en_attente',
             paytech_token=token,
             reference=ref_command,
+            est_achat_carte=est_achat_carte,
         )
 
         request.session['paytech_payment_id'] = payment.pk
@@ -365,6 +389,7 @@ class PayTechIPNView(View):
             payment.statut = 'confirme'
             payment.reference = ref_command or payment.reference
             payment.save(update_fields=['statut', 'reference'])
+            _activate_member_card(payment)
             from communication.email_utils import notify_payment_confirmed
             notify_payment_confirmed(payment)
         elif type_event == 'sale_canceled':
@@ -391,6 +416,11 @@ class PayTechSuccessView(LoginRequiredMixin, View):
             if transaction.get('status') == 102:
                 payment.statut = 'confirme'
                 payment.save(update_fields=['statut'])
+                _activate_member_card(payment)
+
+        if payment and payment.est_achat_carte and payment.statut == 'confirme':
+            messages.success(request, 'Votre carte membre AMEEK est activée !')
+            return redirect('profiles:member_card')
 
         return render(request, 'payments/paytech_result.html', {
             'success': True,
@@ -401,9 +431,12 @@ class PayTechSuccessView(LoginRequiredMixin, View):
 class PayTechCancelView(LoginRequiredMixin, View):
     def get(self, request):
         payment_id = request.session.pop('paytech_payment_id', None)
+        redirect_url = 'payments:list'
         if payment_id:
             try:
                 payment = Payment.objects.get(pk=payment_id, member=request.user)
+                if payment.est_achat_carte:
+                    redirect_url = 'profiles:buy_card'
                 if payment.statut == 'en_attente':
                     payment.statut = 'echoue'
                     payment.save(update_fields=['statut'])
@@ -411,7 +444,7 @@ class PayTechCancelView(LoginRequiredMixin, View):
                 payment = None
 
         messages.info(request, 'Paiement annulé.')
-        return redirect('payments:list')
+        return redirect(redirect_url)
 
 
 
