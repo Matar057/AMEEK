@@ -48,6 +48,8 @@
           <dd class="w-full sm:w-2/3 px-2 mb-2">{{ member.profile.universite|default:"—" }}</dd>
           <dt class="w-full sm:w-1/3 px-2 font-semibold text-gray-700">Filière</dt>
           <dd class="w-full sm:w-2/3 px-2 mb-2">{{ member.profile.filiere|default:"—" }}</dd>
+          <dt class="w-full sm:w-1/3 px-2 font-semibold text-gray-700">Niveau d'étude</dt>
+          <dd class="w-full sm:w-2/3 px-2 mb-2">{{ member.profile.get_niveau_etude_display|default:"—" }}</dd>
           <dt class="w-full sm:w-1/3 px-2 font-semibold text-gray-700">Profession</dt>
           <dd class="w-full sm:w-2/3 px-2 mb-2">{{ member.profile.profession|default:"—" }}</dd>
         </dl>

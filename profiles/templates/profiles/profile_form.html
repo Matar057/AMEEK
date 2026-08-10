@@ -54,6 +54,13 @@
               {% endif %}
             </div>
             <div>
+              <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.niveau_etude.label }}{% if form.niveau_etude.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
+              {{ form.niveau_etude }}
+              {% if form.niveau_etude.errors %}
+                <p class="bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-2 rounded mt-1 font-medium">⚠ {{ form.niveau_etude.errors.0 }}</p>
+              {% endif %}
+            </div>
+            <div>
               <label class="block text-gray-700 font-medium text-sm mb-1">{{ form.profession.label }}{% if form.profession.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
               {{ form.profession }}
               {% if form.profession.errors %}

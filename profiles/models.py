@@ -21,6 +21,17 @@ class Profile(models.Model):
         ('AUTRE', 'Autre'),
     ]
 
+    NIVEAU_ETUDE_CHOICES = [
+        ('bac', 'Baccalauréat'),
+        ('licence1', 'Licence 1'),
+        ('licence2', 'Licence 2'),
+        ('licence3', 'Licence 3'),
+        ('master1', 'Master 1'),
+        ('master2', 'Master 2'),
+        ('doctorat', 'Doctorat'),
+        ('autre', 'Autre'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     statut = models.CharField('Statut', max_length=20, choices=STATUT_CHOICES, blank=True)
     numero_membre = models.CharField('Numéro de membre', max_length=20, unique=True, blank=True, null=True)
@@ -30,6 +41,7 @@ class Profile(models.Model):
     serie = models.CharField('Série du Bac', max_length=10, choices=SERIE_CHOICES, blank=True)
     universite = models.CharField('Université / École', max_length=200, blank=True)
     filiere = models.CharField('Filière d\'étude', max_length=200, blank=True)
+    niveau_etude = models.CharField('Niveau d\'étude', max_length=20, choices=NIVEAU_ETUDE_CHOICES, blank=True)
     profession = models.CharField('Profession', max_length=200, blank=True)
     bio = models.TextField('Biographie / Conseils', blank=True)
     adresse = models.TextField('Adresse', blank=True)

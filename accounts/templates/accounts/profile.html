@@ -64,6 +64,9 @@
           <dt class="font-medium text-gray-600">Filière</dt>
           <dd class="text-gray-900">{{ user.profile.filiere|default:"—" }}</dd>
 
+          <dt class="font-medium text-gray-600">Niveau d'étude</dt>
+          <dd class="text-gray-900">{{ user.profile.get_niveau_etude_display|default:"—" }}</dd>
+
           <dt class="font-medium text-gray-600">Profession</dt>
           <dd class="text-gray-900">{{ user.profile.profession|default:"—" }}</dd>
         </dl>

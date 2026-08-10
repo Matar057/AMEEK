@@ -13,7 +13,7 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = (
             'telephone', 'photo', 'date_naissance', 'adresse',
-            'promotion_bac', 'serie', 'universite', 'filiere',
+            'promotion_bac', 'serie', 'universite', 'filiere', 'niveau_etude',
             'profession', 'bio', 'est_visible',
         )
         widgets = {
