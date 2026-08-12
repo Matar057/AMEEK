@@ -28,6 +28,7 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-screen flex flex-col bg-[#FFF8F0]">
+  {% block navbar %}
   <nav class="bg-gradient-to-r from-amicale to-amicale-fonce text-white shadow-lg sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4">
       <div class="flex items-center justify-between h-16">
@@ -118,6 +119,7 @@
       </div>
     </div>
   </nav>
+  {% endblock navbar %}
 
   {% if user.is_authenticated and not user.is_staff and not user.profile.carte_achetee %}
     <div class="bg-red-600 text-white text-center px-4 py-2 text-sm">
