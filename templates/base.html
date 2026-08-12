@@ -128,7 +128,7 @@
     </div>
   {% endif %}
 
-  <main class="max-w-7xl mx-auto px-4 py-6 pb-24 flex-1 w-full">
+  <main class="max-w-7xl mx-auto px-4 py-6 pb-12 flex-1 w-full">
 
     {% if messages %}
       {% for message in messages %}
@@ -140,10 +140,9 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="bg-gradient-to-r from-amicale-fonce to-amicale text-white text-center py-6">
+  <footer class="sticky bottom-0 z-40 bg-gradient-to-r from-amicale-fonce to-amicale text-white text-center py-1">
     <div class="max-w-7xl mx-auto px-4">
-      <p class="text-sm font-semibold tracking-wide mb-2">Solidarité – Entraide – Respect – Engagement</p>
-      <small>&copy; {% now "Y" %} AMEEK. Tous droits réservés.</small>
+      <p class="text-xs font-semibold tracking-wide mb-0">Solidarité – Entraide – Respect – Engagement &copy; {% now "Y" %} AMEEK</p>
     </div>
   </footer>
 
