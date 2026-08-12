@@ -24,3 +24,17 @@ html {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
 }
+
+/* Masquer la barre de défilement tout en gardant le scroll */
+::-webkit-scrollbar {
+    display: none;
+}
+
+html {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body {
+    overflow-y: auto;
+}
