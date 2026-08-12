@@ -1,16 +1,16 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Sum
 from django.views.generic import TemplateView
 
 from profiles.models import Profile
-from profiles.mixins import CarteRequiredMixin
 from payments.models import Payment
 from events.models import Event
 from forum.models import Question
 from communication.models import Publication
 
 
-class DashboardIndexView(CarteRequiredMixin, TemplateView):
+class DashboardIndexView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/index.html'
 
     def get_context_data(self, **kwargs):

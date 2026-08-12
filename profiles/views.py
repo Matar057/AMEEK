@@ -87,7 +87,7 @@ class ProfileDetailView(DetailView):
         return User.objects.filter(profile__est_visible=True)
 
 
-class MemberListView(CarteRequiredMixin, ListView):
+class MemberListView(LoginRequiredMixin, ListView):
     model = User
     template_name = 'profiles/member_list.html'
     context_object_name = 'members'

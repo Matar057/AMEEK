@@ -40,7 +40,7 @@ MONTHS = [
 YEAR_CHOICES = [(str(y), str(y)) for y in range(2020, date.today().year + 2)]
 
 
-class PaymentListView(CarteRequiredMixin, LoginRequiredMixin, ListView):
+class PaymentListView(LoginRequiredMixin, ListView):
     model = Payment
     template_name = 'payments/payment_list.html'
     context_object_name = 'payments'
