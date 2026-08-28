@@ -34,7 +34,7 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: 60%;
-    opacity: 0.1;
+    opacity: 0.2;
     z-index: 1;
     pointer-events: none;
   }
@@ -77,13 +77,14 @@
   <div class="card-wrapper">
     <div class="card-inner relative">
       <div class="card-front bg-white shadow-xl p-6">
+        <img src="{% static 'img/logo.png' %}" alt="Logo AMEEK" class="absolute top-3 right-3 w-12 h-12 object-contain">
         <div class="flex items-center gap-4 mb-4">
           {% if profile.photo %}
             <img src="{{ profile.photo.url }}" alt="{{ member.get_full_name }}" class="member-photo">
           {% else %}
             <div class="member-photo-placeholder">{{ member.first_name|first|upper }}{{ member.last_name|first|upper }}</div>
           {% endif %}
-          <div class="flex-1 min-w-0">
+          <div class="flex-1 min-w-0 pr-16">
             <h4 class="text-lg font-bold">{{ member.get_full_name|default:member.username }}</h4>
             {% if profile.numero_membre %}
               <p class="text-sm text-gray-500 font-mono">N° {{ profile.numero_membre }}</p>
