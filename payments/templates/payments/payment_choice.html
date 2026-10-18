@@ -10,7 +10,6 @@
     <p class="text-gray-500 mt-1">Choisissez votre mode de paiement en ligne</p>
   </div>
 
-  {% comment %} Paiement en ligne (PayTech) désactivé jusqu'à nouvel ordre
   <form method="get" action="{% url 'payments:paytech_checkout' %}">
     <div class="bg-white rounded-xl shadow-md p-6 mb-6">
       <label for="montant" class="block text-gray-700 font-medium mb-1">Montant (FCFA)</label>
@@ -48,7 +47,6 @@
       </button>
     </div>
   </form>
-  {% endcomment %}
 
   <div class="mt-6 text-center">
     <a href="{% url 'payments:list' %}" class="text-gray-500 hover:text-gray-700 text-sm">Retour</a>
