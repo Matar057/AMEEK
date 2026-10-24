@@ -10,8 +10,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
   <title>{% block title %}AMEEK{% endblock %}</title>
-  <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
-  <link rel="apple-touch-icon" href="{% static 'img/favicon.png' %}">
+  <link rel="icon" href="{% static 'img/favicon.ico' %}?v=6" sizes="any">
+  <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}?v=6">
+  <link rel="icon" type="image/png" sizes="512x512" href="{% static 'img/favicon.png' %}?v=6">
+  <link rel="apple-touch-icon" sizes="512x512" href="{% static 'img/favicon.png' %}?v=6">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
