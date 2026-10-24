@@ -10,9 +10,9 @@
 {% endblock %}
 
 {% block branding %}
-<div style="display: flex; align-items: center; gap: 10px;">
+<div style="display: flex; align-items: center; gap: 12px;">
   <a href="{% url 'admin:index' %}">
-    <img src="{% static 'img/logo.png' %}" alt="AMEEK" style="height: 40px; width: auto; display: block;">
+    <img src="{% static 'img/logo.png' %}" alt="AMEEK" style="height: 48px; width: auto; display: block;">
   </a>
   <h1 id="site-name" style="margin: 0;"><a href="{% url 'admin:index' %}">{{ site_header|default:'AMEEK' }}</a></h1>
 </div>
