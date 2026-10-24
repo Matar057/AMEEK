@@ -1,10 +1,21 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Administration') }}{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('AMEEK') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="shortcut icon" type="image/png" href="{% static 'img/logo.png' %}">
+<link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Administration') }}</a></h1>
+<div style="display: flex; align-items: center; gap: 10px;">
+  <a href="{% url 'admin:index' %}">
+    <img src="{% static 'img/logo.png' %}" alt="AMEEK" style="height: 40px; width: auto; display: block;">
+  </a>
+  <h1 id="site-name" style="margin: 0;"><a href="{% url 'admin:index' %}">{{ site_header|default:'AMEEK' }}</a></h1>
+</div>
 {% endblock %}
 
 {% block footer %}
